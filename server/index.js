@@ -12,7 +12,7 @@ const doktorRoute = require("./routes/doktorRoute");
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-    res.send("API BILGI ANA SAYFA")
+    res.send("Welcome Healmob API")
 })
 
 app.use('/uzmanlikalani', uzmanlikAlaniRouter);
