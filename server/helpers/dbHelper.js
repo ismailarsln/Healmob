@@ -14,6 +14,7 @@ class dbHelper {
             if (err) {
                 console.log("Database connection error! Error:");
                 console.log(err);
+                return callback(dbHelper.createBadRequestResponse("Could not connect to database"));
             } else {
                 console.log("Connected to Database!");
             }
