@@ -50,7 +50,7 @@ class dbHelper {
     }
 
     static defaultBadRequestResponse = {
-        data: "",
+        data: [],
         success: false,
         message: "Bad request",
         status: "400",
