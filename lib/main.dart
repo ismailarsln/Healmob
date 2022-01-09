@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healmob/screens/login/login_screen.dart';
+import 'package:healmob/screens/patient_home/patient_home_screen.dart';
 import 'package:healmob/screens/register/register_screen.dart';
 
 void main() {
@@ -15,6 +16,7 @@ class Healmob extends StatelessWidget {
       routes: {
         "/login": (context) => const LoginScreen(),
         "/register": (context) => const RegisterScreen(),
+        "/patientHome": (context) => const PatientHomeScreen(),
       },
       initialRoute: "/login",
     );

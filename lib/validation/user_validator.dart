@@ -1,6 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 
-class HastaValidationMixin {
+class UserValidationMixin {
   String? validateFirstName(String? value) {
     if (value!.length < 3) {
       return "Ad en az 3 karakter olmalıdır";

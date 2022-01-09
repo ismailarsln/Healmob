@@ -19,8 +19,8 @@ class Hasta {
         ad = json["ad"],
         soyad = json["soyad"],
         telefon = json["telefon"],
-        cinsiyet = json["cinsiyet"],
-        aktifDurum = json["aktif_durum"],
+        cinsiyet = json["cinsiyet"] == 0 ? false : true,
+        aktifDurum = json["aktif_durum"] == 0 ? false : true,
         resimYolu = json["resim_yolu"];
 
   Map toJson() {
@@ -31,8 +31,8 @@ class Hasta {
       "ad": ad,
       "soyad": soyad,
       "telefon": telefon,
-      "cinsiyet": cinsiyet,
-      "aktif_durum": aktifDurum,
+      "cinsiyet": cinsiyet ? 1 : 0,
+      "aktif_durum": aktifDurum ? 1 : 0,
       "resim_yolu": resimYolu
     };
   }

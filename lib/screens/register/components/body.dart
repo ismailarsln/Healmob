@@ -16,7 +16,7 @@ import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:healmob/models/hasta.dart';
-import 'package:healmob/validation/hasta_validator.dart';
+import 'package:healmob/validation/user_validator.dart';
 
 var _isPatient = true;
 AnabilimDali selectedAnabilimDali = AnabilimDali(-1, "Anabilim dali seçiniz");
@@ -29,7 +29,7 @@ class Body extends StatefulWidget {
   State<Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> with HastaValidationMixin {
+class _BodyState extends State<Body> with UserValidationMixin {
   List<AnabilimDali> anabilimDaliList = <AnabilimDali>[selectedAnabilimDali];
   final _formKey = GlobalKey<FormState>();
   var hasta = Hasta(1, "", "", "", "", "", false, false, "");
