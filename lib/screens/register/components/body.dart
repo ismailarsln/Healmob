@@ -254,12 +254,25 @@ class _BodyState extends State<Body> with HastaValidationMixin {
     showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
+  void _showRegisterSuccessfulAlert(
+      BuildContext context, String title, String message) {
+    var alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(context: context, builder: (BuildContext context) => alert)
+        .then((value) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, "/login", ModalRoute.withName('/'));
+    });
+  }
+
   createHastaToApi(Hasta hasta) {
     HastaApi.add(hasta).then((response) {
       ApiPostResponse apiResponse =
           ApiPostResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
-        _showAlert(
+        _showRegisterSuccessfulAlert(
             context, "Hasta kaydı başarılı", "Kaydınız başarıyla oluşturuldu");
       } else {
         _showAlert(
@@ -276,7 +289,7 @@ class _BodyState extends State<Body> with HastaValidationMixin {
       ApiPostResponse apiResponse =
           ApiPostResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
-        _showAlert(
+        _showRegisterSuccessfulAlert(
             context, "Doktor kaydı başarılı", "Kaydınız başarıyla oluşturuldu");
       } else {
         _showAlert(

@@ -1,6 +1,4 @@
 class PostDataModel {
-  // {"affectedRows":1,"insertId":25,"changedRows":0}
-  // {"affectedRows":-1,"insertId":-1,"changedRows":-1}
   final int affectedRows;
   final int insertId;
   final int changedRows;
