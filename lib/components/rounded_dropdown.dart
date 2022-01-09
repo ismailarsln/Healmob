@@ -4,7 +4,7 @@ import 'package:healmob/constants.dart';
 
 class RoundedDropdown<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
-  final List<T> items;
+  final List<DropdownMenuItem<T>> items;
   final T? selectedValue;
   final IconData icon;
   final Color backColor;
@@ -32,16 +32,7 @@ class RoundedDropdown<T> extends StatelessWidget {
         Expanded(
           child: DropdownButton(
             isExpanded: true,
-            items: items
-                .map(
-                  (T i) => DropdownMenuItem<T>(
-                    child: Text(
-                      i.toString(),
-                    ),
-                    value: i,
-                  ),
-                )
-                .toList(),
+            items: items,
             onChanged: onChanged,
             value: selectedValue,
           ),

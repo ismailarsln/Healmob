@@ -77,7 +77,8 @@ class _BodyState extends State<Body> {
                 onPress: () {},
               ),
               AlreadyHaveAnAccountCheck(onPress: () {
-                Navigator.pushNamed(context, "/register");
+                Navigator.pushNamedAndRemoveUntil(
+                    context, "/register", ModalRoute.withName('/'));
               }),
               SizedBox(
                 height: size.height * 0.03,

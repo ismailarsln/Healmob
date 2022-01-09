@@ -1,12 +1,12 @@
-class ApiResponse {
+class ApiGetResponse {
   final List data;
   final bool success;
   final String message;
   final String status;
 
-  ApiResponse(this.data, this.success, this.message, this.status);
+  ApiGetResponse(this.data, this.success, this.message, this.status);
 
-  ApiResponse.fromJson(Map json)
+  ApiGetResponse.fromJson(Map json)
       : data = json["data"],
         success = json["success"],
         message = json["message"],

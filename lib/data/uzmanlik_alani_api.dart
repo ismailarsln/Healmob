@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/uzmanlik_alani.dart';
 import 'package:http/http.dart' as http;
@@ -19,16 +21,16 @@ class UzmanlikAlaniApi {
 
   static Future add(UzmanlikAlani uzmanlikAlani) {
     return http.post(Uri.parse(route + "/add"),
-        headers: Environment.APIHEADERS, body: uzmanlikAlani.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(uzmanlikAlani));
   }
 
   static Future delete(UzmanlikAlani uzmanlikAlani) {
     return http.post(Uri.parse(route + "/delete"),
-        headers: Environment.APIHEADERS, body: uzmanlikAlani.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(uzmanlikAlani));
   }
 
   static Future update(UzmanlikAlani uzmanlikAlani) {
     return http.post(Uri.parse(route + "/update"),
-        headers: Environment.APIHEADERS, body: uzmanlikAlani.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(uzmanlikAlani));
   }
 }

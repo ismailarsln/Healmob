@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/mesaj.dart';
 import 'package:http/http.dart' as http;
@@ -23,16 +25,16 @@ class MesajApi {
 
   static Future sendMessage(Mesaj mesaj) {
     return http.post(Uri.parse(route + "/sendmessage"),
-        headers: Environment.APIHEADERS, body: mesaj.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(mesaj));
   }
 
   static Future delete(Mesaj mesaj) {
     return http.post(Uri.parse(route + "/delete"),
-        headers: Environment.APIHEADERS, body: mesaj.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(mesaj));
   }
 
   static Future replyToMessage(Mesaj mesaj) {
     return http.post(Uri.parse(route + "/replytomessage"),
-        headers: Environment.APIHEADERS, body: mesaj.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(mesaj));
   }
 }

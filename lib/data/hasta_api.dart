@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/hasta.dart';
 import 'package:http/http.dart' as http;
@@ -35,16 +37,16 @@ class HastaApi {
 
   static Future add(Hasta hasta) {
     return http.post(Uri.parse(route + "/add"),
-        headers: Environment.APIHEADERS, body: hasta.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(hasta));
   }
 
   static Future delete(Hasta hasta) {
     return http.post(Uri.parse(route + "/delete"),
-        headers: Environment.APIHEADERS, body: hasta.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(hasta));
   }
 
   static Future update(Hasta hasta) {
     return http.post(Uri.parse(route + "/update"),
-        headers: Environment.APIHEADERS, body: hasta.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(hasta));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:http/http.dart' as http;
@@ -39,16 +41,16 @@ class DoktorApi {
 
   static Future add(Doktor doktor) {
     return http.post(Uri.parse(route + "/add"),
-        headers: Environment.APIHEADERS, body: doktor.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(doktor));
   }
 
   static Future delete(Doktor doktor) {
     return http.post(Uri.parse(route + "/delete"),
-        headers: Environment.APIHEADERS, body: doktor.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(doktor));
   }
 
   static Future update(Doktor doktor) {
     return http.post(Uri.parse(route + "/update"),
-        headers: Environment.APIHEADERS, body: doktor.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(doktor));
   }
 }

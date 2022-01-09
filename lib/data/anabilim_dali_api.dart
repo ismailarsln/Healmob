@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/anabilim_dali.dart';
 import 'package:http/http.dart' as http;
@@ -19,16 +21,16 @@ class AnabilimDaliApi {
 
   static Future add(AnabilimDali anabilimDali) {
     return http.post(Uri.parse(route + "/add"),
-        headers: Environment.APIHEADERS, body: anabilimDali.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(anabilimDali));
   }
 
   static Future delete(AnabilimDali anabilimDali) {
     return http.post(Uri.parse(route + "/delete"),
-        headers: Environment.APIHEADERS, body: anabilimDali.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(anabilimDali));
   }
 
   static Future update(AnabilimDali anabilimDali) {
     return http.post(Uri.parse(route + "/update"),
-        headers: Environment.APIHEADERS, body: anabilimDali.toJson());
+        headers: Environment.APIHEADERS, body: json.encode(anabilimDali));
   }
 }

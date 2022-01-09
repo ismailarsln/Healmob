@@ -29,7 +29,15 @@ class dbHelper {
                 }
                 if (err.sqlState = '45000') {
                     //Duplicate error for db triggers
-                    //Message = "Kayit zaten var"
+                    //Sample Message = "Kayit zaten var"
+                    if(inputCommand.startsWith('INSERT') || inputCommand.startsWith('UPDATE') || inputCommand.startsWith('DELETE')){ // If the query is an add/delete/update query
+                        var manipulationResult = {
+                            affectedRows: -1,
+                            insertId: -1,
+                            changedRows: -1
+                        }
+                        return callback(dbHelper.createFailDataResponse(manipulationResult,err.sqlMessage));
+                    }
                     return callback(dbHelper.createBadRequestResponse(err.sqlMessage));
                 }
 
@@ -37,7 +45,7 @@ class dbHelper {
                 return callback(dbHelper.defaultBadRequestResponse);
             }
 
-            if (result.affectedRows != null) { // If the query is an add/delete/update query
+            if(inputCommand.startsWith('INSERT') || inputCommand.startsWith('UPDATE') || inputCommand.startsWith('DELETE')){ // If the query is an add/delete/update query
                 var manipulationResult = {
                     affectedRows: result.affectedRows,
                     insertId: result.insertId,
@@ -61,6 +69,15 @@ class dbHelper {
             data: inputData,
             success: true,
             message: "Successful",
+            status: "200",
+        };
+    }
+
+    static createFailDataResponse(inputData, errorMessage) {
+        return {
+            data: inputData,
+            success: false,
+            message: errorMessage,
             status: "200",
         };
     }

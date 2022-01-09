@@ -1,14 +1,14 @@
 class Doktor {
-  final int doktorNo;
-  final int anabilimDaliNo;
-  final String email;
-  final String sifre;
-  final String ad;
-  final String soyad;
-  final String telefon;
-  final bool cinsiyet;
-  final bool aktifDurum;
-  final String? resimYolu;
+  int doktorNo;
+  int anabilimDaliNo;
+  String email;
+  String sifre;
+  String ad;
+  String soyad;
+  String telefon;
+  bool cinsiyet;
+  bool aktifDurum;
+  String? resimYolu;
 
   Doktor(this.doktorNo, this.anabilimDaliNo, this.email, this.sifre, this.ad,
       this.soyad, this.telefon, this.cinsiyet, this.aktifDurum, this.resimYolu);

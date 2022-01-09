@@ -1,13 +1,13 @@
 class Hasta {
-  final int hastaNo;
-  final String email;
-  final String sifre;
-  final String ad;
-  final String soyad;
-  final String telefon;
-  final bool cinsiyet;
-  final bool aktifDurum;
-  final String? resimYolu;
+  int hastaNo;
+  String email;
+  String sifre;
+  String ad;
+  String soyad;
+  String telefon;
+  bool cinsiyet;
+  bool aktifDurum;
+  String? resimYolu;
 
   Hasta(this.hastaNo, this.email, this.sifre, this.ad, this.soyad, this.telefon,
       this.cinsiyet, this.aktifDurum, this.resimYolu);
