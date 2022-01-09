@@ -2,7 +2,7 @@ import 'package:healmob/environment.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:http/http.dart' as http;
 
-const route = Environment.APIURL + "/doktor";
+const route = Environment.APIURL + "doktor";
 
 class DoktorApi {
   static Future getAll() {

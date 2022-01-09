@@ -2,7 +2,7 @@ import 'package:healmob/environment.dart';
 import 'package:healmob/models/hasta.dart';
 import 'package:http/http.dart' as http;
 
-const route = Environment.APIURL + "/hasta";
+const route = Environment.APIURL + "hasta";
 
 class HastaApi {
   static Future getAll() {

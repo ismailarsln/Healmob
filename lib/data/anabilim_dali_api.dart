@@ -2,7 +2,7 @@ import 'package:healmob/environment.dart';
 import 'package:healmob/models/anabilim_dali.dart';
 import 'package:http/http.dart' as http;
 
-const route = Environment.APIURL + "/anabilim_dali";
+const route = Environment.APIURL + "anabilimdali";
 
 class AnabilimDaliApi {
   static Future getAll() {

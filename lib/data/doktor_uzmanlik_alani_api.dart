@@ -2,7 +2,7 @@ import 'package:healmob/environment.dart';
 import 'package:healmob/models/doktor_uzmanlik_alani.dart';
 import 'package:http/http.dart' as http;
 
-const route = Environment.APIURL + "/doktoruzmanlikalani";
+const route = Environment.APIURL + "doktoruzmanlikalani";
 
 class DoktorUzmanlikAlaniApi {
   static Future getAll() {
