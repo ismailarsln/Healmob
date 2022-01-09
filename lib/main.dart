@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:healmob/screens/welcome_sceen/welcomeScreen.dart';
+import 'package:healmob/screens/login/login_screen.dart';
+import 'package:healmob/screens/register/register_screen.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const Healmob());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Healmob extends StatelessWidget {
+  const Healmob({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: welcomeScreen(),
+      routes: {
+        "/login": (context) => const LoginScreen(),
+        "/register": (context) => const RegisterScreen(),
+      },
+      initialRoute: "/login",
     );
   }
 }
