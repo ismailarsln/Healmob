@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:healmob/constants.dart';
 import 'package:healmob/data/doktor_api.dart';
 import 'package:healmob/data/mesaj_api.dart';
+import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:healmob/models/hasta.dart';
@@ -40,6 +43,9 @@ class _MessagePageState extends State<MessagePage> {
           var messageDoctor = doktorList.firstWhere(
               (element) => element.doktorNo == hastaMesajList[index].doktorNo);
           return ListTile(
+            tileColor: hastaMesajList[index].doktorYanit == null
+                ? Colors.transparent
+                : appPrimaryLightColor,
             onTap: () {
               Navigator.push(
                 context,
@@ -48,6 +54,7 @@ class _MessagePageState extends State<MessagePage> {
                     hasta: widget.hasta,
                     doktor: messageDoctor,
                     mesaj: hastaMesajList[index],
+                    isSenderHasta: true,
                     permSendMessage: false,
                   ),
                 ),
@@ -67,11 +74,36 @@ class _MessagePageState extends State<MessagePage> {
               ],
             ),
             leading: CircleAvatar(
-              child: SvgPicture.asset(messageDoctor.cinsiyet
-                  ? "assets/images/person-girl-flat.svg"
-                  : "assets/images/person-flat.svg"),
+              radius: MediaQuery.of(context).size.width / 18,
+              backgroundColor: Colors.transparent,
+              child: messageDoctor.resimYolu == "" ||
+                      messageDoctor.resimYolu == null
+                  ? ClipOval(
+                      child: SvgPicture.asset(
+                        messageDoctor.cinsiyet
+                            ? "assets/images/person-girl-flat.svg"
+                            : "assets/images/person-flat.svg",
+                      ),
+                    )
+                  : ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            "${Environment.APIURL}/${messageDoctor.resimYolu}",
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.error,
+                          size: 40,
+                        ),
+                      ),
+                    ),
             ),
-            trailing: const Icon(Icons.zoom_in),
+            trailing: hastaMesajList[index].doktorYanit == null
+                ? const Icon(Icons.zoom_in_sharp)
+                : const Icon(
+                    Icons.done,
+                    color: appPrimaryDarkColor,
+                  ),
           );
         },
       ),
@@ -92,6 +124,9 @@ class _MessagePageState extends State<MessagePage> {
             setState(() {
               if (!hastaMesajList.contains(message)) {
                 hastaMesajList.add(message);
+                hastaMesajList.sort(
+                  (a, b) => b.gonderimTarihi.compareTo(a.gonderimTarihi),
+                );
               }
             });
           } else {
@@ -103,6 +138,8 @@ class _MessagePageState extends State<MessagePage> {
                 setState(() {
                   if (!hastaMesajList.contains(message)) {
                     hastaMesajList.add(message);
+                    hastaMesajList.sort(
+                        (a, b) => b.gonderimTarihi.compareTo(a.gonderimTarihi));
                   }
                   if (!doktorList.contains(doktor)) {
                     doktorList.add(doktor);

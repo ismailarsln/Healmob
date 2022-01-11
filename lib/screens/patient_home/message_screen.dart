@@ -1,9 +1,10 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:healmob/constants.dart';
 import 'package:healmob/data/mesaj_api.dart';
+import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
 import 'package:healmob/models/doktor.dart';
@@ -14,6 +15,7 @@ class MessageScreen extends StatefulWidget {
   Hasta hasta;
   Doktor doktor;
   Mesaj mesaj;
+  bool isSenderHasta;
   bool permSendMessage;
 
   MessageScreen(
@@ -21,6 +23,7 @@ class MessageScreen extends StatefulWidget {
       required this.mesaj,
       required this.hasta,
       required this.doktor,
+      required this.isSenderHasta,
       required this.permSendMessage})
       : super(key: key);
 
@@ -33,21 +36,99 @@ class _MessageScreenState extends State<MessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool appBarCondition = widget.isSenderHasta
+        ? widget.doktor.resimYolu == "" || widget.doktor.resimYolu == null
+        : widget.hasta.resimYolu == "" || widget.hasta.resimYolu == null;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             CircleAvatar(
-              child: SvgPicture.asset(widget.doktor.cinsiyet
-                  ? "assets/images/person-girl-flat.svg"
-                  : "assets/images/person-flat.svg"),
+              radius: MediaQuery.of(context).size.width / 20,
+              backgroundColor: Colors.transparent,
+              child: appBarCondition
+                  ? ClipOval(
+                      child: SvgPicture.asset(
+                        widget.isSenderHasta
+                            ? widget.doktor.cinsiyet
+                                ? "assets/images/person-girl-flat.svg"
+                                : "assets/images/person-flat.svg"
+                            : widget.hasta.cinsiyet
+                                ? "assets/images/person-girl-flat.svg"
+                                : "assets/images/person-flat.svg",
+                      ),
+                    )
+                  : ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            "${Environment.APIURL}/${widget.isSenderHasta ? widget.doktor.resimYolu : widget.hasta.resimYolu}",
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.error,
+                          size: 40,
+                        ),
+                      ),
+                    ),
             ),
             const SizedBox(
               width: 10.0,
             ),
-            Text("${widget.doktor.ad} ${widget.doktor.soyad}"),
+            Text(widget.isSenderHasta
+                ? "${widget.doktor.ad} ${widget.doktor.soyad}"
+                : "${widget.hasta.ad} ${widget.hasta.soyad}"),
           ],
         ),
+        actions: widget.permSendMessage
+            ? []
+            : [
+                IconButton(
+                  onPressed: () {
+                    var cancelButton = TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("İptal"));
+                    var deleteButton = TextButton(
+                        onPressed: () {
+                          MesajApi.delete(widget.mesaj).then((response) {
+                            var apiResponse = ApiPostResponse.fromJson(
+                                json.decode(response.body));
+                            if (apiResponse.success) {
+                              Navigator.pushNamedAndRemoveUntil(context,
+                                  "/patientHome", ModalRoute.withName('/'),
+                                  arguments: widget.hasta);
+                            } else {
+                              _showAlert(context, "Silme başarısız",
+                                  "Mesajı silerken bir şeyler ters gitti\n\n${apiResponse.message}");
+                              Navigator.pop(context);
+                              return;
+                            }
+                          });
+                        },
+                        child: const Text("Sil"));
+                    var alert = AlertDialog(
+                      title: const Text("Silme onayı"),
+                      content: const Text(
+                          "Bu mesajı silmek istediğinize emin misiniz?"),
+                      actions: [deleteButton, cancelButton],
+                    );
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                ),
+                const SizedBox(
+                  width: 10,
+                )
+              ],
       ),
       body: Column(
         children: [
@@ -57,11 +138,23 @@ class _MessageScreenState extends State<MessageScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    showMessage(true, widget.mesaj.hastaMesaj),
+                    showMessage(
+                        widget.doktor,
+                        widget.hasta,
+                        widget.isSenderHasta,
+                        widget.mesaj.hastaMesaj,
+                        (widget.mesaj.gonderimTarihi.toString().split(".")[0])),
                     const SizedBox(
                       height: 50.0,
                     ),
-                    showMessage(false, widget.mesaj.doktorYanit),
+                    showMessage(
+                        widget.doktor,
+                        widget.hasta,
+                        !widget.isSenderHasta,
+                        widget.mesaj.doktorYanit,
+                        (widget.mesaj.yanitlanmaTarihi
+                            .toString()
+                            .split(".")[0])),
                   ],
                 ),
               ),
@@ -73,10 +166,14 @@ class _MessageScreenState extends State<MessageScreen> {
     );
   }
 
-  Widget showMessage(bool isSender, String? message) {
+  Widget showMessage(Doktor doktor, Hasta hasta, bool isSender, String? message,
+      String sendTime) {
     if (message == null || message == "") {
       return const Text("");
     }
+    bool imageCondition = widget.isSenderHasta
+        ? widget.doktor.resimYolu == "" || widget.doktor.resimYolu == null
+        : widget.hasta.resimYolu == "" || widget.hasta.resimYolu == null;
     return Row(
       mainAxisAlignment:
           isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -84,28 +181,86 @@ class _MessageScreenState extends State<MessageScreen> {
       children: [
         if (!isSender)
           CircleAvatar(
-            radius: 15,
-            child: SvgPicture.asset(widget.doktor.cinsiyet
-                ? "assets/images/person-girl-flat.svg"
-                : "assets/images/person-flat.svg"),
+            radius: MediaQuery.of(context).size.width / 18,
+            backgroundColor: Colors.transparent,
+            child: imageCondition
+                ? ClipOval(
+                    child: SvgPicture.asset(
+                      widget.isSenderHasta
+                          ? widget.doktor.cinsiyet
+                              ? "assets/images/person-girl-flat.svg"
+                              : "assets/images/person-flat.svg"
+                          : widget.hasta.cinsiyet
+                              ? "assets/images/person-girl-flat.svg"
+                              : "assets/images/person-flat.svg",
+                    ),
+                  )
+                : ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "${Environment.APIURL}/${widget.isSenderHasta ? widget.doktor.resimYolu : widget.hasta.resimYolu}",
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.error,
+                        size: 40,
+                      ),
+                    ),
+                  ),
           ),
         Flexible(
           child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              decoration: BoxDecoration(
-                  color: isSender ? appPrimaryColor : Colors.green,
-                  borderRadius: BorderRadius.circular(30.0)),
-              child: Text(
-                message,
-                style: const TextStyle(color: Colors.white),
-              )),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            decoration: BoxDecoration(
+                color: isSender ? appPrimaryColor : Colors.green,
+                borderRadius: BorderRadius.circular(30.0)),
+            child: Column(
+              crossAxisAlignment:
+                  isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  sendTime,
+                  style: const TextStyle(fontSize: 13, color: Colors.white70),
+                )
+              ],
+            ),
+          ),
         ),
         if (isSender)
           CircleAvatar(
-            radius: 15,
-            child: SvgPicture.asset(widget.hasta.cinsiyet
-                ? "assets/images/person-girl-flat.svg"
-                : "assets/images/person-flat.svg"),
+            radius: MediaQuery.of(context).size.width / 18,
+            backgroundColor: Colors.transparent,
+            child: !imageCondition
+                ? ClipOval(
+                    child: SvgPicture.asset(
+                      widget.isSenderHasta
+                          ? widget.hasta.cinsiyet
+                              ? "assets/images/person-girl-flat.svg"
+                              : "assets/images/person-flat.svg"
+                          : widget.doktor.cinsiyet
+                              ? "assets/images/person-girl-flat.svg"
+                              : "assets/images/person-flat.svg",
+                    ),
+                  )
+                : ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "${Environment.APIURL}/${widget.isSenderHasta ? widget.hasta.resimYolu : widget.doktor.resimYolu}",
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.error,
+                        size: 40,
+                      ),
+                    ),
+                  ),
           ),
       ],
     );
@@ -173,8 +328,15 @@ class _MessageScreenState extends State<MessageScreen> {
                             "Mesajınız 6000 karakteri geçemez");
                         return;
                       }
-                      var message = Mesaj(1, widget.hasta.hastaNo,
-                          widget.doktor.doktorNo, txtMessage.text, "", "");
+                      var message = Mesaj(
+                          1,
+                          widget.hasta.hastaNo,
+                          widget.doktor.doktorNo,
+                          txtMessage.text,
+                          "",
+                          "",
+                          DateTime.now(),
+                          null);
                       MesajApi.sendMessage(message).then((response) {
                         var apiResponse = ApiPostResponse.fromJson(
                             json.decode(response.body));

@@ -257,7 +257,8 @@ router.post('/update', (request, response) => {
       soyad = '${request.body.soyad}', 
       telefon = '${request.body.telefon}', 
       cinsiyet = ${request.body.cinsiyet}, 
-      aktif_durum = ${request.body.aktif_durum} WHERE hasta_no = ${request.body.hasta_no}`;
+      aktif_durum = ${request.body.aktif_durum},
+      resim_yolu = '${request.body.resim_yolu}' WHERE hasta_no = ${request.body.hasta_no}`;
 
     dbHelper.runCommandInDb(command, (result) => {
         console.log(`${command} ---> ${result.status}${result.status=='200' ? ' OK' : ' BAD REQUEST'} (${result.status=='200' ? `A:${result.data.affectedRows}, I:${result.data.insertId}, C:${result.data.changedRows}` : result.message})`);

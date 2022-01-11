@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:healmob/components/rounded_button.dart';
@@ -10,6 +11,7 @@ import 'package:healmob/data/doktor_api.dart';
 import 'package:healmob/data/doktor_uzmanlik_alani_api.dart';
 import 'package:healmob/data/mesaj_api.dart';
 import 'package:healmob/data/uzmanlik_alani_api.dart';
+import 'package:healmob/environment.dart';
 import 'package:healmob/models/anabilim_dali.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/doktor.dart';
@@ -208,7 +210,8 @@ class _HomePageState extends State<HomePage> {
                     var apiResponse =
                         ApiGetResponse.fromJson(json.decode(response.body));
                     if (apiResponse.success) {
-                      Mesaj sentMessage = Mesaj(-1, -1, -1, "", "", "");
+                      Mesaj sentMessage =
+                          Mesaj(-1, -1, -1, "", "", "", DateTime.now(), null);
                       for (int i = 0; i < apiResponse.data.length; i++) {
                         var mesaj = Mesaj.fromJson(apiResponse.data[i]);
                         if (mesaj.doktorNo == selectedDoktor.doktorNo) {
@@ -223,6 +226,7 @@ class _HomePageState extends State<HomePage> {
                             hasta: widget.hasta,
                             doktor: selectedDoktor,
                             mesaj: sentMessage,
+                            isSenderHasta: true,
                             permSendMessage: sentMessage.mesajId == -1,
                           ),
                         ),
@@ -233,11 +237,34 @@ class _HomePageState extends State<HomePage> {
                 title: Text("${selectedDoktor.ad} ${selectedDoktor.soyad}"),
                 subtitle: Text(selectedDoktor.cinsiyet ? 'KADIN' : 'ERKEK'),
                 leading: CircleAvatar(
-                  child: SvgPicture.asset(selectedDoktor.cinsiyet
-                      ? "assets/images/person-girl-flat.svg"
-                      : "assets/images/person-flat.svg"),
+                  radius: MediaQuery.of(context).size.width / 18,
+                  backgroundColor: Colors.transparent,
+                  child: selectedDoktor.resimYolu == "" ||
+                          selectedDoktor.resimYolu == null
+                      ? ClipOval(
+                          child: SvgPicture.asset(
+                            selectedDoktor.cinsiyet
+                                ? "assets/images/person-girl-flat.svg"
+                                : "assets/images/person-flat.svg",
+                          ),
+                        )
+                      : ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                "${Environment.APIURL}/${selectedDoktor.resimYolu}",
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => const Icon(
+                              Icons.error,
+                              size: 45,
+                            ),
+                          ),
+                        ),
                 ),
-                trailing: const Icon(Icons.message),
+                trailing: const Icon(
+                  Icons.send,
+                  color: appPrimaryColor,
+                ),
               );
             },
           ),

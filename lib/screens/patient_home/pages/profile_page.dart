@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,10 +9,14 @@ import 'package:healmob/components/rounded_button.dart';
 import 'package:healmob/components/rounded_form_input_field.dart';
 import 'package:healmob/components/rounded_form_password_field.dart';
 import 'package:healmob/constants.dart';
+import 'package:healmob/data/file_api.dart';
 import 'package:healmob/data/hasta_api.dart';
+import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
+import 'package:healmob/models/api_response/api_upload_post_response.dart';
 import 'package:healmob/models/hasta.dart';
 import 'package:healmob/validation/user_validator.dart';
+import 'package:http/http.dart';
 
 class ProfilePage extends StatefulWidget {
   Hasta hasta;
@@ -52,16 +58,78 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                     CircleAvatar(
                       radius: MediaQuery.of(context).size.width / 4.5,
                       backgroundColor: Colors.transparent,
-                      child: SvgPicture.asset(
-                        widget.hasta.cinsiyet
-                            ? "assets/images/person-girl-flat.svg"
-                            : "assets/images/person-flat.svg",
-                        height: MediaQuery.of(context).size.width / 2.2,
-                        width: MediaQuery.of(context).size.width / 2.2,
-                      ),
+                      child: widget.hasta.resimYolu == "" ||
+                              widget.hasta.resimYolu == null
+                          ? ClipOval(
+                              child: SvgPicture.asset(
+                                widget.hasta.cinsiyet
+                                    ? "assets/images/person-girl-flat.svg"
+                                    : "assets/images/person-flat.svg",
+                                height: MediaQuery.of(context).size.width / 2.2,
+                                width: MediaQuery.of(context).size.width / 2.2,
+                              ),
+                            )
+                          : ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    "${Environment.APIURL}/${widget.hasta.resimYolu}",
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                  Icons.error,
+                                  size: 160,
+                                ),
+                              ),
+                            ),
                     ),
                     TextButton(
-                        onPressed: () {}, child: const Text("Resmi değiştir")),
+                        child: const Text("Resmi değiştir"),
+                        onPressed: () {
+                          FilePicker.platform
+                              .pickFiles(withReadStream: true)
+                              .then((value) {
+                            if (value != null && value.paths.isNotEmpty) {
+                              FileApi.uploadImage(value.files.single)
+                                  .then((imageUploadApiResponse) {
+                                var x =
+                                    imageUploadApiResponse as StreamedResponse;
+                                x.stream.bytesToString().then((finalResponse) {
+                                  var apiUploadResponse =
+                                      ApiUploadPostResponse.fromJson(
+                                          json.decode(finalResponse));
+                                  if (apiUploadResponse.success) {
+                                    widget.hasta.resimYolu =
+                                        apiUploadResponse.data.path;
+                                    widget.hasta.aktifDurum = false;
+                                    HastaApi.update(widget.hasta)
+                                        .then((hastaUpdateApiResponse) {
+                                      var hastaUpdateResponse =
+                                          ApiPostResponse.fromJson(json.decode(
+                                              hastaUpdateApiResponse.body));
+                                      if (hastaUpdateResponse.success) {
+                                        _showRegisterAlertAndCloseApp(
+                                            context,
+                                            "Resim yüklendi",
+                                            "Resim başarıyla yüklendi. Uygulama yeniden başlatılıyor");
+                                      } else {
+                                        _showAlert(context, "Dosya yüklenemedi",
+                                            "Dosya yüklenirken bir şeyler ters gitti\n\n${hastaUpdateResponse.message}");
+                                        widget.hasta.aktifDurum = true;
+                                        return;
+                                      }
+                                    });
+                                  } else {
+                                    _showAlert(context, "Dosya yüklenemedi",
+                                        "Dosya yüklenirken bir şeyler ters gitti\n\n${apiUploadResponse.message}");
+                                    return;
+                                  }
+                                });
+                              });
+                              //print(value.paths[0]);
+                            }
+                          });
+                        }),
                   ],
                 ),
                 Form(
