@@ -78,7 +78,7 @@ class dbHelper {
             data: inputData,
             success: false,
             message: errorMessage,
-            status: "200",
+            status: "400",
         };
     }
 
