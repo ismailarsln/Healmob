@@ -150,7 +150,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                           arguments: hasta);
                     } else {
                       _showAlert(context, "Bağlantı sorunu",
-                          "Giriş yapılırken bir sorun oluştu");
+                          "Giriş yapılırken bir sorun oluştu\n\n${apiPostResponse.message}");
                     }
                   });
                 } else {
@@ -165,6 +165,9 @@ class _BodyState extends State<Body> with UserValidationMixin {
               _showAlert(
                   context, "Giriş başarısız", "E-posta adresiniz bulunamadı");
             }
+          } else {
+            _showAlert(context, "Bağlantı sorunu",
+                "Şu anda sunucu bağlantısında bir sorun yaşıyoruz\n\n${apiResponse.message}");
           }
         });
       } else {
@@ -186,7 +189,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       print("GİRDİ");
                     } else {
                       _showAlert(context, "Bağlantı sorunu",
-                          "Giriş yapılırken bir sorun oluştu");
+                          "Giriş yapılırken bir sorun oluştu\n\n${apiPostResponse.message}");
                     }
                   });
                 } else {
@@ -201,6 +204,9 @@ class _BodyState extends State<Body> with UserValidationMixin {
               _showAlert(
                   context, "Giriş başarısız", "E-posta adresiniz bulunamadı");
             }
+          } else {
+            _showAlert(context, "Bağlantı sorunu",
+                "Şu anda sunucu bağlantısında bir sorun yaşıyoruz\n\n${apiResponse.message}");
           }
         });
       }

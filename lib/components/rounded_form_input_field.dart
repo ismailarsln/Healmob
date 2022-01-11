@@ -9,6 +9,7 @@ class RoundedFormInputField extends StatelessWidget {
   final Color backColor;
   final String? Function(String?) validator;
   final Function(String?) onSaved;
+  final String? initialValue;
 
   const RoundedFormInputField({
     Key? key,
@@ -18,12 +19,14 @@ class RoundedFormInputField extends StatelessWidget {
     this.backColor = appPrimaryColor,
     required this.validator,
     required this.onSaved,
+    this.initialValue,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
       child: TextFormField(
+        initialValue: initialValue,
         onChanged: onChanged,
         decoration: InputDecoration(
             icon: Icon(

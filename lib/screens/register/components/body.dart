@@ -19,7 +19,7 @@ import 'package:healmob/models/hasta.dart';
 import 'package:healmob/validation/user_validator.dart';
 
 var _isPatient = true;
-AnabilimDali selectedAnabilimDali = AnabilimDali(-1, "Anabilim dali seçiniz");
+AnabilimDali selectedAnabilimDali = AnabilimDali(-1, "Anabilim dalı seçiniz");
 String gender = "Cinsiyetiniz";
 
 class Body extends StatefulWidget {
