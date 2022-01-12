@@ -12,4 +12,5 @@ class Environment {
   static const Map<String, String> APIHEADERS = <String, String>{
     'Content-Type': 'application/json; charset=UTF-8',
   };
+  static const String FBSERVERKEY = "YOUR_SERVER_KEY";
 }
