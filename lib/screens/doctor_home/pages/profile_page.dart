@@ -7,16 +7,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:healmob/components/rounded_button.dart';
 import 'package:healmob/components/rounded_form_input_field.dart';
 import 'package:healmob/components/rounded_form_password_field.dart';
+import 'package:healmob/components/text_field_container.dart';
 import 'package:healmob/constants.dart';
 import 'package:healmob/data/doktor_api.dart';
+import 'package:healmob/data/doktor_uzmanlik_alani_api.dart';
 import 'package:healmob/data/file_api.dart';
+import 'package:healmob/data/uzmanlik_alani_api.dart';
 import 'package:healmob/environment.dart';
+import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
 import 'package:healmob/models/api_response/api_upload_post_response.dart';
 import 'package:healmob/models/doktor.dart';
+import 'package:healmob/models/doktor_uzmanlik_alani.dart';
+import 'package:healmob/models/uzmanlik_alani.dart';
 import 'package:healmob/validation/user_validator.dart';
 import 'package:http/http.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:collection/collection.dart';
 
 class ProfilePage extends StatefulWidget {
   Doktor doktor;
@@ -36,6 +43,13 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
   var txtOldPassword = TextEditingController();
   var txtNewPassword = TextEditingController();
   var txtReNewPassword = TextEditingController();
+  Map<UzmanlikAlani, bool> uzmanlikAlaniList = <UzmanlikAlani, bool>{};
+
+  @override
+  void initState() {
+    getAllUzmanlikAlaniFromApi();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,6 +250,118 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                           }
                         },
                       ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(
+                        color: appPrimaryDarkColor,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFieldContainer(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                "Uzmanlık alanlarınızı seçiniz",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    decoration: TextDecoration.underline),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: uzmanlikAlaniList.length,
+                                  itemBuilder: (context, index) {
+                                    var tempUzmanlikAlaniList =
+                                        uzmanlikAlaniList.keys.toList();
+                                    var tempSelectedList =
+                                        uzmanlikAlaniList.values.toList();
+                                    return CheckboxListTile(
+                                      title: Text(tempUzmanlikAlaniList[index]
+                                          .uzmanlikAlaniAdi),
+                                      selected: tempSelectedList[index],
+                                      value: tempSelectedList[index],
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            uzmanlikAlaniList[
+                                                tempUzmanlikAlaniList[
+                                                    index]] = value!;
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      RoundedButton(
+                        buttonText: "Uzmanlık alanlarımı güncelle",
+                        onPress: () {
+                          DoktorUzmanlikAlaniApi.getAllByDoktorNo(
+                                  widget.doktor.doktorNo)
+                              .then((response) async {
+                            ApiGetResponse apiResponse =
+                                ApiGetResponse.fromJson(
+                                    json.decode(response.body));
+                            if (apiResponse.success) {
+                              var doktorUzmanlikAlaniList = apiResponse.data
+                                  .map((d) => DoktorUzmanlikAlani.fromJson(d))
+                                  .toList();
+
+                              for (int i = 0;
+                                  i < uzmanlikAlaniList.length;
+                                  i++) {
+                                var selectedUzmanlikAlani =
+                                    uzmanlikAlaniList.keys.toList()[i];
+                                bool isSelected =
+                                    uzmanlikAlaniList[selectedUzmanlikAlani]!;
+
+                                var existDoktorUzmanlikAlani =
+                                    doktorUzmanlikAlaniList.firstWhereOrNull(
+                                        (u) =>
+                                            u.uzmanlikAlaniId ==
+                                            selectedUzmanlikAlani
+                                                .uzmanlikAlaniId);
+
+                                if (existDoktorUzmanlikAlani != null &&
+                                    !isSelected) {
+                                  await DoktorUzmanlikAlaniApi.delete(
+                                      existDoktorUzmanlikAlani);
+                                  continue;
+                                }
+
+                                if (existDoktorUzmanlikAlani == null &&
+                                    isSelected) {
+                                  await DoktorUzmanlikAlaniApi.add(
+                                      DoktorUzmanlikAlani(
+                                          1,
+                                          widget.doktor.doktorNo,
+                                          selectedUzmanlikAlani
+                                              .uzmanlikAlaniId));
+                                }
+                              }
+                              _showRegisterAlertAndRestartApp(
+                                context,
+                                "Güncelleme başarılı",
+                                "Uzmanlık alanlarınız başarıyla güncellendi. Lütfen tekrar giriş yapınız",
+                              );
+                            }
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -353,6 +479,33 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
     showDialog(context: context, builder: (BuildContext context) => alert)
         .then((value) {
       Restart.restartApp();
+    });
+  }
+
+  getAllUzmanlikAlaniFromApi() {
+    uzmanlikAlaniList.clear();
+    UzmanlikAlaniApi.getAll().then((response) {
+      ApiGetResponse apiResponse =
+          ApiGetResponse.fromJson(json.decode(response.body));
+      if (apiResponse.success) {
+        DoktorUzmanlikAlaniApi.getAllByDoktorNo(widget.doktor.doktorNo)
+            .then((response2) {
+          ApiGetResponse apiResponse2 =
+              ApiGetResponse.fromJson(json.decode(response2.body));
+          if (apiResponse2.success) {
+            var doktorUzmanlikAlaniList = apiResponse2.data
+                .map((d) => DoktorUzmanlikAlani.fromJson(d))
+                .toList();
+            for (var uzmanlikAlaniInstance in apiResponse.data) {
+              var uzmanlikAlani = UzmanlikAlani.fromJson(uzmanlikAlaniInstance);
+              setState(() {
+                uzmanlikAlaniList[uzmanlikAlani] = doktorUzmanlikAlaniList.any(
+                    (d) => d.uzmanlikAlaniId == uzmanlikAlani.uzmanlikAlaniId);
+              });
+            }
+          }
+        });
+      }
     });
   }
 }

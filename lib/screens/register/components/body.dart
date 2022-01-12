@@ -7,15 +7,20 @@ import 'package:healmob/components/rounded_dropdown.dart';
 import 'package:healmob/components/rounded_form_input_field.dart';
 import 'package:healmob/components/rounded_form_password_field.dart';
 import 'package:healmob/components/swap_doctor_patient_screen.dart';
+import 'package:healmob/components/text_field_container.dart';
 import 'package:healmob/constants.dart';
 import 'package:healmob/data/anabilim_dali_api.dart';
 import 'package:healmob/data/doktor_api.dart';
+import 'package:healmob/data/doktor_uzmanlik_alani_api.dart';
 import 'package:healmob/data/hasta_api.dart';
+import 'package:healmob/data/uzmanlik_alani_api.dart';
 import 'package:healmob/models/anabilim_dali.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
 import 'package:healmob/models/doktor.dart';
+import 'package:healmob/models/doktor_uzmanlik_alani.dart';
 import 'package:healmob/models/hasta.dart';
+import 'package:healmob/models/uzmanlik_alani.dart';
 import 'package:healmob/validation/user_validator.dart';
 
 var _isPatient = true;
@@ -31,6 +36,7 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> with UserValidationMixin {
   List<AnabilimDali> anabilimDaliList = <AnabilimDali>[selectedAnabilimDali];
+  Map<UzmanlikAlani, bool> uzmanlikAlaniList = <UzmanlikAlani, bool>{};
   final _formKey = GlobalKey<FormState>();
   var hasta = Hasta(-1, "", "", "", "", "", false, false, "");
   var doktor = Doktor(-1, -1, "", "", "", "", "", false, false, "");
@@ -38,6 +44,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
   @override
   void initState() {
     getAllAnabilimDaliFromApi();
+    getAllUzmanlikAlaniFromApi();
     super.initState();
   }
 
@@ -149,6 +156,21 @@ class _BodyState extends State<Body> with UserValidationMixin {
                             : doktor.telefon = value.toString();
                       },
                     ),
+                    RoundedDropdown<String>(
+                      icon: Icons.wc,
+                      onChanged: (value) {
+                        setState(() {
+                          gender = value!;
+                        });
+                      },
+                      items: ["Cinsiyetiniz", "Erkek", "Kadın"]
+                          .map((c) => DropdownMenuItem(
+                                child: Text(c),
+                                value: c,
+                              ))
+                          .toList(),
+                      selectedValue: gender,
+                    ),
                     if (!_isPatient)
                       RoundedDropdown<AnabilimDali>(
                         icon: Icons.assignment_ind_rounded,
@@ -165,21 +187,55 @@ class _BodyState extends State<Body> with UserValidationMixin {
                             .toList(),
                         selectedValue: selectedAnabilimDali,
                       ),
-                    RoundedDropdown<String>(
-                      icon: Icons.wc,
-                      onChanged: (value) {
-                        setState(() {
-                          gender = value!;
-                        });
-                      },
-                      items: ["Cinsiyetiniz", "Erkek", "Kadın"]
-                          .map((c) => DropdownMenuItem(
-                                child: Text(c),
-                                value: c,
-                              ))
-                          .toList(),
-                      selectedValue: gender,
-                    ),
+                    if (!_isPatient)
+                      TextFieldContainer(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                "Uzmanlık alanlarınızı seçiniz",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    decoration: TextDecoration.underline),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: uzmanlikAlaniList.length,
+                                  itemBuilder: (context, index) {
+                                    var tempUzmanlikAlaniList =
+                                        uzmanlikAlaniList.keys.toList();
+                                    var tempSelectedList =
+                                        uzmanlikAlaniList.values.toList();
+                                    return CheckboxListTile(
+                                      title: Text(tempUzmanlikAlaniList[index]
+                                          .uzmanlikAlaniAdi),
+                                      selected: tempSelectedList[index],
+                                      value: tempSelectedList[index],
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            uzmanlikAlaniList[
+                                                tempUzmanlikAlaniList[
+                                                    index]] = value!;
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -239,6 +295,11 @@ class _BodyState extends State<Body> with UserValidationMixin {
               "Lütfen anabilim dalınızı seçiniz");
           return;
         }
+        if (!uzmanlikAlaniList.values.toList().any((element) => element)) {
+          _showAlert(context, "Uzmanlık alanı seçiniz",
+              "En az bir uzmanlık alanı seçmelisiniz");
+          return;
+        }
         doktor.cinsiyet = boolGender;
         doktor.anabilimDaliNo = selectedAnabilimDali.anabilimDaliNo;
         createDoktorToApi(doktor);
@@ -281,11 +342,21 @@ class _BodyState extends State<Body> with UserValidationMixin {
   }
 
   createDoktorToApi(Doktor doktor) {
-    DoktorApi.add(doktor).then((response) {
+    DoktorApi.add(doktor).then((response) async {
       ApiPostResponse apiResponse =
           ApiPostResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
         doktor.doktorNo = apiResponse.data.insertId;
+
+        for (int i = 0; i < uzmanlikAlaniList.length; i++) {
+          var selectedUzmanlikAlani = uzmanlikAlaniList.keys.toList()[i];
+          bool isSelected = uzmanlikAlaniList[selectedUzmanlikAlani]!;
+          if (isSelected) {
+            await DoktorUzmanlikAlaniApi.add(DoktorUzmanlikAlani(
+                1, doktor.doktorNo, selectedUzmanlikAlani.uzmanlikAlaniId));
+          }
+        }
+
         var alert = const AlertDialog(
           title: Text("Doktor kaydı başarılı"),
           content: Text("Kaydınız başarıyla oluşturuldu"),
@@ -302,6 +373,22 @@ class _BodyState extends State<Body> with UserValidationMixin {
             "Doktor kaydı başarısız",
             "Kaydınız sırasında bir şeyler ters gitti\n\n" +
                 apiResponse.message);
+      }
+    });
+  }
+
+  getAllUzmanlikAlaniFromApi() {
+    uzmanlikAlaniList.clear();
+    UzmanlikAlaniApi.getAll().then((response) {
+      ApiGetResponse apiResponse =
+          ApiGetResponse.fromJson(json.decode(response.body));
+      if (apiResponse.success) {
+        for (var uzmanlikAlaniInstance in apiResponse.data) {
+          var uzmanlikAlani = UzmanlikAlani.fromJson(uzmanlikAlaniInstance);
+          setState(() {
+            uzmanlikAlaniList[uzmanlikAlani] = false;
+          });
+        }
       }
     });
   }
