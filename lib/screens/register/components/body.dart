@@ -321,6 +321,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
       _formKey.currentState!.save();
       if (_isPatient) {
         hasta.cinsiyet = boolGender;
+        hasta.aktifDurum = true;
         createHastaToApi(hasta);
       } else {
         if (selectedAnabilimDali.anabilimDaliNo == -1) {
@@ -335,6 +336,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
         }
         doktor.cinsiyet = boolGender;
         doktor.anabilimDaliNo = selectedAnabilimDali.anabilimDaliNo;
+        doktor.aktifDurum = true;
         createDoktorToApi(doktor);
       }
     }
