@@ -186,7 +186,9 @@ class _BodyState extends State<Body> with UserValidationMixin {
                     ApiPostResponse apiPostResponse = ApiPostResponse.fromJson(
                         json.decode(updateResponse.body));
                     if (apiPostResponse.success) {
-                      print("GİRDİ");
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "/doctorHome", ModalRoute.withName('/'),
+                          arguments: doktor);
                     } else {
                       _showAlert(context, "Bağlantı sorunu",
                           "Giriş yapılırken bir sorun oluştu\n\n${apiPostResponse.message}");

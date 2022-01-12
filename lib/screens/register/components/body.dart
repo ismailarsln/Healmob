@@ -32,8 +32,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> with UserValidationMixin {
   List<AnabilimDali> anabilimDaliList = <AnabilimDali>[selectedAnabilimDali];
   final _formKey = GlobalKey<FormState>();
-  var hasta = Hasta(1, "", "", "", "", "", false, false, "");
-  var doktor = Doktor(1, -1, "", "", "", "", "", false, false, "");
+  var hasta = Hasta(-1, "", "", "", "", "", false, false, "");
+  var doktor = Doktor(-1, -1, "", "", "", "", "", false, false, "");
 
   @override
   void initState() {
@@ -254,26 +254,22 @@ class _BodyState extends State<Body> with UserValidationMixin {
     showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
-  void _showRegisterSuccessfulAlert(
-      BuildContext context, String title, String message) {
-    var alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-    );
-    showDialog(context: context, builder: (BuildContext context) => alert)
-        .then((value) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, "/login", ModalRoute.withName('/'));
-    });
-  }
-
   createHastaToApi(Hasta hasta) {
     HastaApi.add(hasta).then((response) {
       ApiPostResponse apiResponse =
           ApiPostResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
-        _showRegisterSuccessfulAlert(
-            context, "Hasta kaydı başarılı", "Kaydınız başarıyla oluşturuldu");
+        hasta.hastaNo = apiResponse.data.insertId;
+        var alert = const AlertDialog(
+          title: Text("Hasta kaydı başarılı"),
+          content: Text("Kaydınız başarıyla oluşturuldu"),
+        );
+        showDialog(context: context, builder: (BuildContext context) => alert)
+            .then((value) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/patientHome", ModalRoute.withName('/'),
+              arguments: hasta);
+        });
       } else {
         _showAlert(
             context,
@@ -289,8 +285,17 @@ class _BodyState extends State<Body> with UserValidationMixin {
       ApiPostResponse apiResponse =
           ApiPostResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
-        _showRegisterSuccessfulAlert(
-            context, "Doktor kaydı başarılı", "Kaydınız başarıyla oluşturuldu");
+        doktor.doktorNo = apiResponse.data.insertId;
+        var alert = const AlertDialog(
+          title: Text("Doktor kaydı başarılı"),
+          content: Text("Kaydınız başarıyla oluşturuldu"),
+        );
+        showDialog(context: context, builder: (BuildContext context) => alert)
+            .then((value) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/doctorHome", ModalRoute.withName('/'),
+              arguments: doktor);
+        });
       } else {
         _showAlert(
             context,

@@ -40,7 +40,7 @@ router.get('/getallbyhastano/:hastano', (request, response) => {
 });
 
 router.get('/getallbydoktorno/:doktorno', (request, response) => {
-    if (!bodyHelper.isStringJustNumbers(request.params.doktor_no)) {
+    if (!bodyHelper.isStringJustNumbers(request.params.doktorno)) {
         response.status(dbHelper.defaultBadRequestResponse.status).send(dbHelper.defaultBadRequestResponse);
         return;
     }

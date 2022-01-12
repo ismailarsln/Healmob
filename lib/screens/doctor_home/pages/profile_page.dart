@@ -8,19 +8,19 @@ import 'package:healmob/components/rounded_button.dart';
 import 'package:healmob/components/rounded_form_input_field.dart';
 import 'package:healmob/components/rounded_form_password_field.dart';
 import 'package:healmob/constants.dart';
+import 'package:healmob/data/doktor_api.dart';
 import 'package:healmob/data/file_api.dart';
-import 'package:healmob/data/hasta_api.dart';
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
 import 'package:healmob/models/api_response/api_upload_post_response.dart';
-import 'package:healmob/models/hasta.dart';
+import 'package:healmob/models/doktor.dart';
 import 'package:healmob/validation/user_validator.dart';
 import 'package:http/http.dart';
 import 'package:restart_app/restart_app.dart';
 
 class ProfilePage extends StatefulWidget {
-  Hasta hasta;
-  ProfilePage({Key? key, required this.hasta}) : super(key: key);
+  Doktor doktor;
+  ProfilePage({Key? key, required this.doktor}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ProfilePageState();
@@ -44,8 +44,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
             AppBar(title: const Text("Profilim"), centerTitle: true, actions: [
           TextButton(
             onPressed: () {
-              widget.hasta.aktifDurum = false;
-              HastaApi.update(widget.hasta).then((response) {
+              widget.doktor.aktifDurum = false;
+              DoktorApi.update(widget.doktor).then((response) {
                 Restart.restartApp();
               });
             },
@@ -72,11 +72,11 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                     CircleAvatar(
                       radius: MediaQuery.of(context).size.width / 4.5,
                       backgroundColor: Colors.transparent,
-                      child: widget.hasta.resimYolu == "" ||
-                              widget.hasta.resimYolu == null
+                      child: widget.doktor.resimYolu == "" ||
+                              widget.doktor.resimYolu == null
                           ? ClipOval(
                               child: SvgPicture.asset(
-                                widget.hasta.cinsiyet
+                                widget.doktor.cinsiyet
                                     ? "assets/images/person-girl-flat.svg"
                                     : "assets/images/person-flat.svg",
                                 height: MediaQuery.of(context).size.width / 2.2,
@@ -86,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                           : ClipOval(
                               child: CachedNetworkImage(
                                 imageUrl:
-                                    "${Environment.APIURL}/${widget.hasta.resimYolu}",
+                                    "${Environment.APIURL}/${widget.doktor.resimYolu}",
                                 placeholder: (context, url) =>
                                     const CircularProgressIndicator(),
                                 errorWidget: (context, url, error) =>
@@ -113,23 +113,23 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                                       ApiUploadPostResponse.fromJson(
                                           json.decode(finalResponse));
                                   if (apiUploadResponse.success) {
-                                    widget.hasta.resimYolu =
+                                    widget.doktor.resimYolu =
                                         apiUploadResponse.data.path;
-                                    widget.hasta.aktifDurum = false;
-                                    HastaApi.update(widget.hasta)
-                                        .then((hastaUpdateApiResponse) {
-                                      var hastaUpdateResponse =
+                                    widget.doktor.aktifDurum = false;
+                                    DoktorApi.update(widget.doktor)
+                                        .then((doktorUpdateApiResponse) {
+                                      var doktorUpdateResponse =
                                           ApiPostResponse.fromJson(json.decode(
-                                              hastaUpdateApiResponse.body));
-                                      if (hastaUpdateResponse.success) {
+                                              doktorUpdateApiResponse.body));
+                                      if (doktorUpdateResponse.success) {
                                         _showRegisterAlertAndRestartApp(
                                             context,
                                             "Resim yüklendi",
                                             "Resim başarıyla yüklendi. Uygulama yeniden başlatılıyor");
                                       } else {
                                         _showAlert(context, "Dosya yüklenemedi",
-                                            "Dosya yüklenirken bir şeyler ters gitti\n\n${hastaUpdateResponse.message}");
-                                        widget.hasta.aktifDurum = true;
+                                            "Dosya yüklenirken bir şeyler ters gitti\n\n${doktorUpdateResponse.message}");
+                                        widget.doktor.aktifDurum = true;
                                         return;
                                       }
                                     });
@@ -152,7 +152,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                     children: [
                       RoundedFormInputField(
                         hintText: "E-posta adresiniz",
-                        initialValue: widget.hasta.email,
+                        initialValue: widget.doktor.email,
                         icon: Icons.mail,
                         onChanged: (value) {},
                         validator: validateEmail,
@@ -162,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                       ),
                       RoundedFormInputField(
                         hintText: "Adınız",
-                        initialValue: widget.hasta.ad,
+                        initialValue: widget.doktor.ad,
                         icon: Icons.person,
                         onChanged: (value) {},
                         validator: validateFirstName,
@@ -172,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                       ),
                       RoundedFormInputField(
                         hintText: "Soyadınız",
-                        initialValue: widget.hasta.soyad,
+                        initialValue: widget.doktor.soyad,
                         icon: Icons.person,
                         onChanged: (value) {},
                         validator: validateLastName,
@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                       ),
                       RoundedFormInputField(
                         hintText: "Telefon numaranız",
-                        initialValue: widget.hasta.telefon,
+                        initialValue: widget.doktor.telefon,
                         icon: Icons.phone,
                         onChanged: (value) {},
                         validator: validatePhone,
@@ -195,25 +195,26 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         onPress: () {
                           if (_profileFormKey.currentState!.validate()) {
                             _profileFormKey.currentState!.save();
-                            if (widget.hasta.email == txtNewEmail.text &&
-                                widget.hasta.ad == txtNewAd.text &&
-                                widget.hasta.soyad == txtNewSoyad.text &&
-                                widget.hasta.telefon == txtNewPhone.text) {
+                            if (widget.doktor.email == txtNewEmail.text &&
+                                widget.doktor.ad == txtNewAd.text &&
+                                widget.doktor.soyad == txtNewSoyad.text &&
+                                widget.doktor.telefon == txtNewPhone.text) {
                               _showAlert(context, "Hiçbir şey değiştirmediniz",
                                   "Güncelleme yapmak için önce bazı bilgilerinizi değiştirin");
                               return;
                             }
-                            var newHasta = Hasta(
-                                widget.hasta.hastaNo,
+                            var newDoktor = Doktor(
+                                widget.doktor.doktorNo,
+                                widget.doktor.anabilimDaliNo,
                                 txtNewEmail.text,
-                                widget.hasta.sifre,
+                                widget.doktor.sifre,
                                 txtNewAd.text,
                                 txtNewSoyad.text,
                                 txtNewPhone.text,
-                                widget.hasta.cinsiyet,
+                                widget.doktor.cinsiyet,
                                 true,
                                 "");
-                            HastaApi.update(newHasta).then((response) {
+                            DoktorApi.update(newDoktor).then((response) {
                               var apiResponse = ApiPostResponse.fromJson(
                                   json.decode(response.body));
                               if (apiResponse.success) {
@@ -280,7 +281,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         onPress: () {
                           if (_passwordFormKey.currentState!.validate()) {
                             _passwordFormKey.currentState!.save();
-                            if (txtOldPassword.text != widget.hasta.sifre) {
+                            if (txtOldPassword.text != widget.doktor.sifre) {
                               _showAlert(context, "Eski şifreniz hatalı",
                                   "Girdiğiniz şifre, eski şifrenizle eşleşmiyor");
                               return;
@@ -290,17 +291,18 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                                   "Girdiğiniz yeni şifreler eşleşmiyor");
                               return;
                             }
-                            var newHasta = Hasta(
-                                widget.hasta.hastaNo,
-                                widget.hasta.email,
+                            var newDoktor = Doktor(
+                                widget.doktor.doktorNo,
+                                widget.doktor.anabilimDaliNo,
+                                widget.doktor.email,
                                 txtNewPassword.text,
-                                widget.hasta.ad,
-                                widget.hasta.soyad,
-                                widget.hasta.telefon,
-                                widget.hasta.cinsiyet,
+                                widget.doktor.ad,
+                                widget.doktor.soyad,
+                                widget.doktor.telefon,
+                                widget.doktor.cinsiyet,
                                 true,
                                 "");
-                            HastaApi.update(newHasta).then((response) {
+                            DoktorApi.update(newDoktor).then((response) {
                               var apiResponse = ApiPostResponse.fromJson(
                                   json.decode(response.body));
                               if (apiResponse.success) {

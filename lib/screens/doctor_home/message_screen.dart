@@ -40,22 +40,24 @@ class _MessageScreenState extends State<MessageScreen> {
           children: [
             CircleAvatar(
               backgroundColor:
-                  widget.doktor.aktifDurum ? Colors.green : Colors.red,
+                  widget.hasta.aktifDurum ? Colors.green : Colors.red,
               radius: 23,
               child: CircleAvatar(
                 radius: MediaQuery.of(context).size.width / 20,
                 backgroundColor: Colors.transparent,
-                child: widget.doktor.resimYolu == "" ||
-                        widget.doktor.resimYolu == null
+                child: widget.hasta.resimYolu == "" ||
+                        widget.hasta.resimYolu == null
                     ? ClipOval(
-                        child: SvgPicture.asset(widget.doktor.cinsiyet
-                            ? "assets/images/person-girl-flat.svg"
-                            : "assets/images/person-flat.svg"),
+                        child: SvgPicture.asset(
+                          widget.hasta.cinsiyet
+                              ? "assets/images/person-girl-flat.svg"
+                              : "assets/images/person-flat.svg",
+                        ),
                       )
                     : ClipOval(
                         child: CachedNetworkImage(
                           imageUrl:
-                              "${Environment.APIURL}/${widget.doktor.resimYolu}",
+                              "${Environment.APIURL}/${widget.hasta.resimYolu}",
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => const Icon(
@@ -70,7 +72,7 @@ class _MessageScreenState extends State<MessageScreen> {
               width: 10.0,
             ),
             Expanded(
-              child: Text("${widget.doktor.ad} ${widget.doktor.soyad}"),
+              child: Text("${widget.hasta.ad} ${widget.hasta.soyad}"),
             ),
           ],
         ),
@@ -91,8 +93,8 @@ class _MessageScreenState extends State<MessageScreen> {
                                 json.decode(response.body));
                             if (apiResponse.success) {
                               Navigator.pushNamedAndRemoveUntil(context,
-                                  "/patientHome", ModalRoute.withName('/'),
-                                  arguments: widget.hasta);
+                                  "/doctorHome", ModalRoute.withName('/'),
+                                  arguments: widget.doktor);
                             } else {
                               _showAlert(context, "Silme başarısız",
                                   "Mesajı silerken bir şeyler ters gitti\n\n${apiResponse.message}");
@@ -133,19 +135,13 @@ class _MessageScreenState extends State<MessageScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    showMessage(
-                        widget.doktor,
-                        widget.hasta,
-                        true,
-                        widget.mesaj.hastaMesaj,
+                    showMessage(false, widget.mesaj.hastaMesaj,
                         (widget.mesaj.gonderimTarihi.toString().split(".")[0])),
                     const SizedBox(
                       height: 50.0,
                     ),
                     showMessage(
-                        widget.doktor,
-                        widget.hasta,
-                        false,
+                        true,
                         widget.mesaj.doktorYanit,
                         (widget.mesaj.yanitlanmaTarihi
                             .toString()
@@ -161,8 +157,7 @@ class _MessageScreenState extends State<MessageScreen> {
     );
   }
 
-  Widget showMessage(Doktor doktor, Hasta hasta, bool isSender, String? message,
-      String sendTime) {
+  Widget showMessage(bool isSender, String? message, String sendTime) {
     if (message == null || message == "") {
       return const Text("");
     }
@@ -176,10 +171,10 @@ class _MessageScreenState extends State<MessageScreen> {
             radius: MediaQuery.of(context).size.width / 18,
             backgroundColor: Colors.transparent,
             child:
-                widget.doktor.resimYolu == "" || widget.doktor.resimYolu == null
+                widget.hasta.resimYolu == "" || widget.hasta.resimYolu == null
                     ? ClipOval(
                         child: SvgPicture.asset(
-                          widget.doktor.cinsiyet
+                          widget.hasta.cinsiyet
                               ? "assets/images/person-girl-flat.svg"
                               : "assets/images/person-flat.svg",
                         ),
@@ -187,7 +182,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     : ClipOval(
                         child: CachedNetworkImage(
                           imageUrl:
-                              "${Environment.APIURL}/${widget.doktor.resimYolu}",
+                              "${Environment.APIURL}/${widget.hasta.resimYolu}",
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => const Icon(
@@ -227,10 +222,10 @@ class _MessageScreenState extends State<MessageScreen> {
             radius: MediaQuery.of(context).size.width / 18,
             backgroundColor: Colors.transparent,
             child:
-                widget.hasta.resimYolu == "" || widget.hasta.resimYolu == null
+                widget.doktor.resimYolu == "" || widget.doktor.resimYolu == null
                     ? ClipOval(
                         child: SvgPicture.asset(
-                          widget.hasta.cinsiyet
+                          widget.doktor.cinsiyet
                               ? "assets/images/person-girl-flat.svg"
                               : "assets/images/person-flat.svg",
                         ),
@@ -238,7 +233,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     : ClipOval(
                         child: CachedNetworkImage(
                           imageUrl:
-                              "${Environment.APIURL}/${widget.hasta.resimYolu}",
+                              "${Environment.APIURL}/${widget.doktor.resimYolu}",
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => const Icon(
@@ -315,19 +310,20 @@ class _MessageScreenState extends State<MessageScreen> {
                         return;
                       }
                       var message = Mesaj(
-                          1,
-                          widget.hasta.hastaNo,
-                          widget.doktor.doktorNo,
+                          widget.mesaj.mesajId,
+                          widget.mesaj.hastaNo,
+                          widget.mesaj.doktorNo,
+                          widget.mesaj.hastaMesaj,
                           txtMessage.text,
-                          "",
-                          "",
-                          DateTime.now(),
-                          null);
-                      MesajApi.sendMessage(message).then((response) {
+                          widget.mesaj.hastaEkYolu,
+                          widget.mesaj.gonderimTarihi,
+                          DateTime.now());
+                      MesajApi.replyToMessage(message).then((response) {
                         var apiResponse = ApiPostResponse.fromJson(
                             json.decode(response.body));
-                        if (apiResponse.success) {
-                          MesajApi.getById(apiResponse.data.insertId).then(
+                        if (apiResponse.success &&
+                            apiResponse.data.affectedRows == 1) {
+                          MesajApi.getById(widget.mesaj.mesajId).then(
                             (getResponse) {
                               var apiGetResponse = ApiGetResponse.fromJson(
                                   json.decode(getResponse.body));

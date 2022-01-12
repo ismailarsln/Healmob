@@ -47,228 +47,239 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const ScrollPhysics(),
-      child: Column(
-        children: [
-          Container(
-            height: 250,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [appPrimaryDarkColor, appPrimaryColor]),
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                    child: Stack(
-                  children: [
-                    Center(
-                      child: Text(
-                        "Hoşgeldiniz\n${widget.hasta.ad.replaceFirst(widget.hasta.ad[0], widget.hasta.ad[0].toUpperCase())} ${widget.hasta.cinsiyet ? 'Hanım' : 'Bey'}",
-                        style: const TextStyle(
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SingleChildScrollView(
+        physics: const ScrollPhysics(),
+        child: Column(
+          children: [
+            Container(
+              height: 250,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [appPrimaryDarkColor, appPrimaryColor]),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                      child: Stack(
+                    children: [
+                      Center(
+                        child: Text(
+                          "Hoşgeldiniz\n${widget.hasta.ad.replaceFirst(widget.hasta.ad[0], widget.hasta.ad[0].toUpperCase())} ${widget.hasta.cinsiyet ? 'Hanım' : 'Bey'}",
+                          style: const TextStyle(
+                            fontSize: 40.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ))
+                ],
+              ),
+            ),
+            DefaultTabController(
+              length: 3,
+              initialIndex: 0,
+              child: Column(
+                children: [
+                  TabBar(
+                    labelColor: appPrimaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    onTap: (val) {
+                      setState(() {
+                        doktorList.clear();
+                      });
+                    },
+                    tabs: const [
+                      Tab(
+                        text: "Anabilim dalı",
                       ),
-                    )
-                  ],
-                ))
-              ],
-            ),
-          ),
-          DefaultTabController(
-            length: 3,
-            initialIndex: 0,
-            child: Column(
-              children: [
-                TabBar(
-                  labelColor: appPrimaryColor,
-                  unselectedLabelColor: Colors.grey,
-                  onTap: (val) {
-                    setState(() {
-                      doktorList.clear();
-                    });
-                  },
-                  tabs: const [
-                    Tab(
-                      text: "Anabilim dalı",
-                    ),
-                    Tab(
-                      text: "Uzmanlık alanı",
-                    ),
-                    Tab(text: "Doktor adı"),
-                  ],
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 4,
-                  child: TabBarView(children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RoundedDropdown<AnabilimDali>(
-                          icon: Icons.assignment_ind_rounded,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedAnabilimDali = value!;
-                            });
-                          },
-                          items: anabilimDaliList
-                              .map((a) => DropdownMenuItem(
-                                    child: Text(a.anabilimDaliAdi),
-                                    value: a,
-                                  ))
-                              .toList(),
-                          selectedValue: selectedAnabilimDali,
-                        ),
-                        RoundedButton(
-                            buttonText: "Anabilim Dalına Göre Doktor Ara",
-                            onPress: () {
-                              if (selectedAnabilimDali.anabilimDaliNo != -1) {
-                                getAllDoktorByAnabilimDaliFromApi(
-                                    selectedAnabilimDali.anabilimDaliNo);
-                              } else {
-                                _showAlert(context, "Anabilim dalı seçiniz",
-                                    "Arama yapmak için bir anabilim dalı seçiniz");
-                              }
-                            }),
-                      ],
-                    ),
-                    SingleChildScrollView(
-                      child: Column(
+                      Tab(
+                        text: "Uzmanlık alanı",
+                      ),
+                      Tab(text: "Doktor adı"),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 4,
+                    child: TabBarView(children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          RoundedDropdown<UzmanlikAlani>(
+                          RoundedDropdown<AnabilimDali>(
                             icon: Icons.assignment_ind_rounded,
                             onChanged: (value) {
                               setState(() {
-                                selectedUzmanlikAlani = value!;
+                                selectedAnabilimDali = value!;
                               });
                             },
-                            items: uzmanlikAlaniList
-                                .map((u) => DropdownMenuItem(
-                                      child: Text(u.uzmanlikAlaniAdi),
-                                      value: u,
+                            items: anabilimDaliList
+                                .map((a) => DropdownMenuItem(
+                                      child: Text(a.anabilimDaliAdi),
+                                      value: a,
                                     ))
                                 .toList(),
-                            selectedValue: selectedUzmanlikAlani,
+                            selectedValue: selectedAnabilimDali,
                           ),
                           RoundedButton(
-                              buttonText: "Uzmanlık Alanına Göre Doktor Ara",
+                              buttonText: "Anabilim Dalına Göre Doktor Ara",
                               onPress: () {
-                                if (selectedUzmanlikAlani.uzmanlikAlaniId !=
-                                    -1) {
-                                  getAllDoktorByUzmanlikAlaniFromApi(
-                                      selectedUzmanlikAlani.uzmanlikAlaniId);
+                                if (selectedAnabilimDali.anabilimDaliNo != -1) {
+                                  getAllDoktorByAnabilimDaliFromApi(
+                                      selectedAnabilimDali.anabilimDaliNo);
                                 } else {
-                                  _showAlert(context, "Uzmanlık alanı seçiniz",
-                                      "Arama yapmak için bir uzmanlık alanı seçiniz");
+                                  _showAlert(context, "Anabilim dalı seçiniz",
+                                      "Arama yapmak için bir anabilim dalı seçiniz");
                                 }
                               }),
                         ],
                       ),
-                    ),
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          RoundedInputField(
-                              hintText: "Doktor adını giriniz",
-                              icon: Icons.drive_file_rename_outline,
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            RoundedDropdown<UzmanlikAlani>(
+                              icon: Icons.assignment_ind_rounded,
                               onChanged: (value) {
-                                txtDoktorAdi.text = value;
-                              }),
-                          RoundedButton(
-                              buttonText: "Ada Göre Doktor Ara",
-                              onPress: () {
-                                if (txtDoktorAdi.text.isNotEmpty) {
-                                  getAllDoktorByNameFromApi(txtDoktorAdi.text);
-                                } else {
-                                  _showAlert(context, "Doktor adı giriniz",
-                                      "Arama yapmak için bir doktor adı giriniz");
-                                }
-                              }),
-                        ],
-                      ),
-                    ),
-                  ]),
-                ),
-              ],
-            ),
-          ),
-          ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: doktorList.length,
-            itemBuilder: (context, int index) {
-              var selectedDoktor = doktorList[index];
-              return ListTile(
-                onTap: () {
-                  MesajApi.getAllByHastaNo(widget.hasta.hastaNo)
-                      .then((response) {
-                    var apiResponse =
-                        ApiGetResponse.fromJson(json.decode(response.body));
-                    if (apiResponse.success) {
-                      Mesaj sentMessage =
-                          Mesaj(-1, -1, -1, "", "", "", DateTime.now(), null);
-                      for (int i = 0; i < apiResponse.data.length; i++) {
-                        var mesaj = Mesaj.fromJson(apiResponse.data[i]);
-                        if (mesaj.doktorNo == selectedDoktor.doktorNo) {
-                          sentMessage = mesaj;
-                          break;
-                        }
-                      }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MessageScreen(
-                            hasta: widget.hasta,
-                            doktor: selectedDoktor,
-                            mesaj: sentMessage,
-                            isSenderHasta: true,
-                            permSendMessage: sentMessage.mesajId == -1,
-                          ),
+                                setState(() {
+                                  selectedUzmanlikAlani = value!;
+                                });
+                              },
+                              items: uzmanlikAlaniList
+                                  .map((u) => DropdownMenuItem(
+                                        child: Text(u.uzmanlikAlaniAdi),
+                                        value: u,
+                                      ))
+                                  .toList(),
+                              selectedValue: selectedUzmanlikAlani,
+                            ),
+                            RoundedButton(
+                                buttonText: "Uzmanlık Alanına Göre Doktor Ara",
+                                onPress: () {
+                                  if (selectedUzmanlikAlani.uzmanlikAlaniId !=
+                                      -1) {
+                                    getAllDoktorByUzmanlikAlaniFromApi(
+                                        selectedUzmanlikAlani.uzmanlikAlaniId);
+                                  } else {
+                                    _showAlert(
+                                        context,
+                                        "Uzmanlık alanı seçiniz",
+                                        "Arama yapmak için bir uzmanlık alanı seçiniz");
+                                  }
+                                }),
+                          ],
                         ),
-                      );
-                    }
-                  });
-                },
-                title: Text("${selectedDoktor.ad} ${selectedDoktor.soyad}"),
-                subtitle: Text(selectedDoktor.cinsiyet ? 'KADIN' : 'ERKEK'),
-                leading: CircleAvatar(
-                  radius: MediaQuery.of(context).size.width / 18,
-                  backgroundColor: Colors.transparent,
-                  child: selectedDoktor.resimYolu == "" ||
-                          selectedDoktor.resimYolu == null
-                      ? ClipOval(
-                          child: SvgPicture.asset(
-                            selectedDoktor.cinsiyet
-                                ? "assets/images/person-girl-flat.svg"
-                                : "assets/images/person-flat.svg",
-                          ),
-                        )
-                      : ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                "${Environment.APIURL}/${selectedDoktor.resimYolu}",
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => const Icon(
-                              Icons.error,
-                              size: 45,
+                      ),
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            RoundedInputField(
+                                hintText: "Doktor adını giriniz",
+                                icon: Icons.drive_file_rename_outline,
+                                onChanged: (value) {
+                                  txtDoktorAdi.text = value;
+                                }),
+                            RoundedButton(
+                                buttonText: "Ada Göre Doktor Ara",
+                                onPress: () {
+                                  if (txtDoktorAdi.text.isNotEmpty) {
+                                    getAllDoktorByNameFromApi(
+                                        txtDoktorAdi.text);
+                                  } else {
+                                    _showAlert(context, "Doktor adı giriniz",
+                                        "Arama yapmak için bir doktor adı giriniz");
+                                  }
+                                }),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  ),
+                ],
+              ),
+            ),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: doktorList.length,
+              itemBuilder: (context, int index) {
+                var selectedDoktor = doktorList[index];
+                return ListTile(
+                  onTap: () {
+                    MesajApi.getAllByHastaNo(widget.hasta.hastaNo)
+                        .then((response) {
+                      var apiResponse =
+                          ApiGetResponse.fromJson(json.decode(response.body));
+                      if (apiResponse.success) {
+                        Mesaj sentMessage =
+                            Mesaj(-1, -1, -1, "", "", "", DateTime.now(), null);
+                        for (int i = 0; i < apiResponse.data.length; i++) {
+                          var mesaj = Mesaj.fromJson(apiResponse.data[i]);
+                          if (mesaj.doktorNo == selectedDoktor.doktorNo) {
+                            sentMessage = mesaj;
+                            break;
+                          }
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MessageScreen(
+                              hasta: widget.hasta,
+                              doktor: selectedDoktor,
+                              mesaj: sentMessage,
+                              permSendMessage: sentMessage.mesajId == -1,
                             ),
                           ),
-                        ),
-                ),
-                trailing: const Icon(
-                  Icons.send,
-                  color: appPrimaryColor,
-                ),
-              );
-            },
-          ),
-        ],
+                        );
+                      }
+                    });
+                  },
+                  title: Text("${selectedDoktor.ad} ${selectedDoktor.soyad}"),
+                  subtitle: Text(selectedDoktor.cinsiyet ? 'KADIN' : 'ERKEK'),
+                  leading: CircleAvatar(
+                    backgroundColor:
+                        selectedDoktor.aktifDurum ? Colors.green : Colors.red,
+                    radius: 27,
+                    child: CircleAvatar(
+                      radius: MediaQuery.of(context).size.width / 18,
+                      backgroundColor: Colors.transparent,
+                      child: selectedDoktor.resimYolu == "" ||
+                              selectedDoktor.resimYolu == null
+                          ? ClipOval(
+                              child: SvgPicture.asset(
+                                selectedDoktor.cinsiyet
+                                    ? "assets/images/person-girl-flat.svg"
+                                    : "assets/images/person-flat.svg",
+                              ),
+                            )
+                          : ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    "${Environment.APIURL}/${selectedDoktor.resimYolu}",
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                  Icons.error,
+                                  size: 45,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.send,
+                    color: appPrimaryColor,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

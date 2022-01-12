@@ -3,30 +3,29 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:healmob/constants.dart';
-import 'package:healmob/data/doktor_api.dart';
+import 'package:healmob/data/hasta_api.dart';
 import 'package:healmob/data/mesaj_api.dart';
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:healmob/models/hasta.dart';
 import 'package:healmob/models/mesaj.dart';
-import 'package:healmob/screens/patient_home/message_screen.dart';
+import 'package:healmob/screens/doctor_home/message_screen.dart';
 
 class MessagePage extends StatefulWidget {
-  final Hasta hasta;
-  const MessagePage({Key? key, required this.hasta}) : super(key: key);
+  final Doktor doktor;
+  const MessagePage({Key? key, required this.doktor}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MessagePageState();
 }
 
 class _MessagePageState extends State<MessagePage> {
-  List<Mesaj> hastaMesajList = <Mesaj>[];
-  List<Doktor> doktorList = <Doktor>[];
-
+  List<Mesaj> mesajList = <Mesaj>[];
+  List<Hasta> hastaList = <Hasta>[];
   @override
   void initState() {
-    getAllMesajAndDoktorByHastaNoFromApi(widget.hasta.hastaNo);
+    getAllMesajAnHastaByHastaNoFromApi(widget.doktor.doktorNo);
     super.initState();
   }
 
@@ -38,35 +37,35 @@ class _MessagePageState extends State<MessagePage> {
         centerTitle: true,
       ),
       body: ListView.builder(
-        itemCount: hastaMesajList.length,
+        itemCount: mesajList.length,
         itemBuilder: (context, int index) {
-          var messageDoctor = doktorList.firstWhere(
-              (element) => element.doktorNo == hastaMesajList[index].doktorNo);
+          var messageHasta = hastaList.firstWhere(
+              (element) => element.hastaNo == mesajList[index].hastaNo);
           return ListTile(
-            tileColor: hastaMesajList[index].doktorYanit == null
-                ? Colors.transparent
-                : appPrimaryLightColor,
+            tileColor: mesajList[index].doktorYanit == null
+                ? const Color(0xFFFACBCB)
+                : Colors.transparent,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MessageScreen(
-                    hasta: widget.hasta,
-                    doktor: messageDoctor,
-                    mesaj: hastaMesajList[index],
-                    permSendMessage: false,
+                    hasta: messageHasta,
+                    doktor: widget.doktor,
+                    mesaj: mesajList[index],
+                    permSendMessage: mesajList[index].doktorYanit == null,
                   ),
                 ),
               );
             },
-            title: Text("${messageDoctor.ad} ${messageDoctor.soyad}"),
+            title: Text("${messageHasta.ad} ${messageHasta.soyad}"),
             subtitle: Row(
               children: [
                 Flexible(
                   child: Text(
-                    hastaMesajList[index].doktorYanit == null
-                        ? hastaMesajList[index].hastaMesaj
-                        : hastaMesajList[index].doktorYanit!,
+                    mesajList[index].doktorYanit == null
+                        ? mesajList[index].hastaMesaj
+                        : mesajList[index].doktorYanit!,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -74,16 +73,16 @@ class _MessagePageState extends State<MessagePage> {
             ),
             leading: CircleAvatar(
               backgroundColor:
-                  messageDoctor.aktifDurum ? Colors.green : Colors.red,
+                  messageHasta.aktifDurum ? Colors.green : Colors.red,
               radius: 27,
               child: CircleAvatar(
                 radius: MediaQuery.of(context).size.width / 18,
                 backgroundColor: Colors.transparent,
-                child: messageDoctor.resimYolu == "" ||
-                        messageDoctor.resimYolu == null
+                child: messageHasta.resimYolu == "" ||
+                        messageHasta.resimYolu == null
                     ? ClipOval(
                         child: SvgPicture.asset(
-                          messageDoctor.cinsiyet
+                          messageHasta.cinsiyet
                               ? "assets/images/person-girl-flat.svg"
                               : "assets/images/person-flat.svg",
                         ),
@@ -91,7 +90,7 @@ class _MessagePageState extends State<MessagePage> {
                     : ClipOval(
                         child: CachedNetworkImage(
                           imageUrl:
-                              "${Environment.APIURL}/${messageDoctor.resimYolu}",
+                              "${Environment.APIURL}/${messageHasta.resimYolu}",
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => const Icon(
@@ -102,11 +101,14 @@ class _MessagePageState extends State<MessagePage> {
                       ),
               ),
             ),
-            trailing: hastaMesajList[index].doktorYanit == null
-                ? const Icon(Icons.zoom_in_sharp)
+            trailing: mesajList[index].doktorYanit == null
+                ? const Icon(
+                    Icons.send,
+                    color: appPrimaryDarkColor,
+                  )
                 : const Icon(
                     Icons.done,
-                    color: appPrimaryDarkColor,
+                    color: Colors.green,
                   ),
           );
         },
@@ -114,39 +116,38 @@ class _MessagePageState extends State<MessagePage> {
     );
   }
 
-  getAllMesajAndDoktorByHastaNoFromApi(int hastaNo) {
-    hastaMesajList.clear();
-    doktorList.clear();
-    MesajApi.getAllByHastaNo(hastaNo).then((response) {
+  getAllMesajAnHastaByHastaNoFromApi(int doktorNo) {
+    mesajList.clear();
+    hastaList.clear();
+    MesajApi.getAllByDoktorNo(doktorNo).then((response) {
       ApiGetResponse apiResponse =
           ApiGetResponse.fromJson(json.decode(response.body));
       if (apiResponse.success) {
         for (int i = 0; i < apiResponse.data.length; i++) {
           var message = Mesaj.fromJson(apiResponse.data[i]);
-          if (doktorList
-              .any((element) => element.doktorNo == message.doktorNo)) {
+          if (hastaList.any((element) => element.hastaNo == message.hastaNo)) {
             setState(() {
-              if (!hastaMesajList.contains(message)) {
-                hastaMesajList.add(message);
-                hastaMesajList.sort(
+              if (!mesajList.contains(message)) {
+                mesajList.add(message);
+                mesajList.sort(
                   (a, b) => b.gonderimTarihi.compareTo(a.gonderimTarihi),
                 );
               }
             });
           } else {
-            DoktorApi.getByDoktorNo(message.doktorNo).then((response2) {
+            HastaApi.getByHastaNo(message.hastaNo).then((response2) {
               var apiResponse2 =
                   ApiGetResponse.fromJson(json.decode(response2.body));
               if (apiResponse2.success) {
-                var doktor = Doktor.fromJson(apiResponse2.data[0]);
+                var hasta = Hasta.fromJson(apiResponse2.data[0]);
                 setState(() {
-                  if (!hastaMesajList.contains(message)) {
-                    hastaMesajList.add(message);
-                    hastaMesajList.sort(
+                  if (!mesajList.contains(message)) {
+                    mesajList.add(message);
+                    mesajList.sort(
                         (a, b) => b.gonderimTarihi.compareTo(a.gonderimTarihi));
                   }
-                  if (!doktorList.contains(doktor)) {
-                    doktorList.add(doktor);
+                  if (!hastaList.contains(hasta)) {
+                    hastaList.add(hasta);
                   }
                 });
               }

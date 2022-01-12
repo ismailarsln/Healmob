@@ -23,7 +23,7 @@ class Doktor {
         telefon = json["telefon"],
         cinsiyet = json["cinsiyet"] == 0 ? false : true,
         aktifDurum = json["aktif_durum"] == 0 ? false : true,
-        resimYolu = json["resim_yolu"];
+        resimYolu = json["resim_yolu"] == "null" ? null : json["resim_yolu"];
 
   Map toJson() {
     return {
@@ -36,7 +36,7 @@ class Doktor {
       "telefon": telefon,
       "cinsiyet": cinsiyet ? 1 : 0,
       "aktif_durum": aktifDurum ? 1 : 0,
-      "resim_yolu": resimYolu
+      "resim_yolu": resimYolu ?? "",
     };
   }
 }
