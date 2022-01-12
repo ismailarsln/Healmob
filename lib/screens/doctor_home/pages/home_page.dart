@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [appPrimaryDarkColor, appPrimaryColor]),
+                    colors: [appSecondDarkColor, appSecondColor]),
               ),
               child: Column(
                 children: [
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               height: MediaQuery.of(context).size.height / 2.5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(60),
-                color: appPrimaryDarkColor,
+                color: appSecondDarkColor,
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,

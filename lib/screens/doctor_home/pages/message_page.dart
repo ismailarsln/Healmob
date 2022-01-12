@@ -35,6 +35,7 @@ class _MessagePageState extends State<MessagePage> {
       appBar: AppBar(
         title: const Text("Mesajlar"),
         centerTitle: true,
+        backgroundColor: appSecondColor,
       ),
       body: ListView.builder(
         itemCount: mesajList.length,
@@ -104,7 +105,7 @@ class _MessagePageState extends State<MessagePage> {
             trailing: mesajList[index].doktorYanit == null
                 ? const Icon(
                     Icons.send,
-                    color: appPrimaryDarkColor,
+                    color: appSecondDarkColor,
                   )
                 : const Icon(
                     Icons.done,

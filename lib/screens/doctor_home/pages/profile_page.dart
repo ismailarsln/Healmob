@@ -54,24 +54,27 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:
-            AppBar(title: const Text("Profilim"), centerTitle: true, actions: [
-          TextButton(
-            onPressed: () {
-              widget.doktor.aktifDurum = false;
-              DoktorApi.update(widget.doktor).then((response) {
-                Restart.restartApp();
-              });
-            },
-            child: const Text(
-              "Güvenli çıkış",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-        ]),
+        appBar: AppBar(
+            title: const Text("Profilim"),
+            centerTitle: true,
+            backgroundColor: appSecondColor,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  widget.doktor.aktifDurum = false;
+                  DoktorApi.update(widget.doktor).then((response) {
+                    Restart.restartApp();
+                  });
+                },
+                child: const Text(
+                  "Güvenli çıkış",
+                  style: TextStyle(
+                      color: Colors.yellowAccent,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ]),
         body: SingleChildScrollView(
           child: Center(
             child: Column(
@@ -165,6 +168,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                   child: Column(
                     children: [
                       RoundedFormInputField(
+                        backColor: appSecondColor,
+                        inputFieldBackColor: appSecondLightColor,
                         hintText: "E-posta adresiniz",
                         initialValue: widget.doktor.email,
                         icon: Icons.mail,
@@ -175,6 +180,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedFormInputField(
+                        backColor: appSecondColor,
+                        inputFieldBackColor: appSecondLightColor,
                         hintText: "Adınız",
                         initialValue: widget.doktor.ad,
                         icon: Icons.person,
@@ -185,6 +192,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedFormInputField(
+                        backColor: appSecondColor,
+                        inputFieldBackColor: appSecondLightColor,
                         hintText: "Soyadınız",
                         initialValue: widget.doktor.soyad,
                         icon: Icons.person,
@@ -195,6 +204,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedFormInputField(
+                        backColor: appSecondColor,
+                        inputFieldBackColor: appSecondLightColor,
                         hintText: "Telefon numaranız",
                         initialValue: widget.doktor.telefon,
                         icon: Icons.phone,
@@ -205,6 +216,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedButton(
+                        backColor: appSecondColor,
                         buttonText: "Profilimi güncelle",
                         onPress: () {
                           if (_profileFormKey.currentState!.validate()) {
@@ -260,6 +272,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         height: 10,
                       ),
                       TextFieldContainer(
+                        backColor: appSecondLightColor,
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height / 3,
                           width: MediaQuery.of(context).size.width / 1.5,
@@ -308,6 +321,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         ),
                       ),
                       RoundedButton(
+                        backColor: appSecondColor,
                         buttonText: "Uzmanlık alanlarımı güncelle",
                         onPress: () {
                           DoktorUzmanlikAlaniApi.getAllByDoktorNo(
@@ -379,6 +393,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                   child: Column(
                     children: [
                       RoundedFormPasswordField(
+                        backColor: appSecondColor,
+                        inputFieldColor: appSecondLightColor,
                         onChanged: (value) {},
                         hintText: "Şuanki şifreniz",
                         validator: validatePassword,
@@ -387,6 +403,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedFormPasswordField(
+                        backColor: appSecondColor,
+                        inputFieldColor: appSecondLightColor,
                         onChanged: (value) {},
                         hintText: "Yeni şifreniz",
                         validator: validatePassword,
@@ -395,6 +413,8 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedFormPasswordField(
+                        backColor: appSecondColor,
+                        inputFieldColor: appSecondLightColor,
                         onChanged: (value) {},
                         hintText: "Yeni şifreniz tekrar",
                         validator: validatePassword,
@@ -403,6 +423,7 @@ class _ProfilePageState extends State<ProfilePage> with UserValidationMixin {
                         },
                       ),
                       RoundedButton(
+                        backColor: appSecondColor,
                         buttonText: "Şifremi güncelle",
                         onPress: () {
                           if (_passwordFormKey.currentState!.validate()) {

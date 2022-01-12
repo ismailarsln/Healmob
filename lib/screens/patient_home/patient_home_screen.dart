@@ -1,9 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:healmob/components/bottom_navigation_bar.dart';
 import 'package:healmob/constants.dart';
 import 'package:healmob/data/notification_service.dart';
 import 'package:healmob/models/hasta.dart';
-import 'package:healmob/screens/patient_home/components/patient_bottom_navigation_bar.dart';
 import 'package:healmob/screens/patient_home/pages/home_page.dart';
 import 'package:healmob/screens/patient_home/pages/message_page.dart';
 import 'package:healmob/screens/patient_home/pages/profile_page.dart';
@@ -47,7 +47,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     ];
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: PatientBottomNavigationBar(
+      bottomNavigationBar: MyBottomNavigationBar(
+        isPatient: true,
         onTap: (index) {
           setState(() {
             _selectedTab = index;

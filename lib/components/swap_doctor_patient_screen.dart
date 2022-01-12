@@ -22,14 +22,15 @@ class SwapDoctorPatientScreen extends StatelessWidget {
           isPatient
               ? "DOKTOR " + (isLoginScreen ? "GİRİŞİ" : "KAYDI") + " İÇİN "
               : "HASTA " + (isLoginScreen ? "GİRİŞİ" : "KAYDI") + " İÇİN ",
-          style: const TextStyle(color: appPrimaryColor),
+          style: TextStyle(color: isPatient ? appPrimaryColor : appSecondColor),
         ),
         GestureDetector(
           onTap: onPress,
-          child: const Text(
+          child: Text(
             "TIKLAYINIZ",
-            style:
-                TextStyle(color: appPrimaryColor, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: isPatient ? appPrimaryColor : appSecondColor,
+                fontWeight: FontWeight.bold),
           ),
         )
       ],

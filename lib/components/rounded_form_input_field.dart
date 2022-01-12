@@ -7,6 +7,7 @@ class RoundedFormInputField extends StatelessWidget {
   final IconData icon;
   final ValueChanged<String> onChanged;
   final Color backColor;
+  final Color inputFieldBackColor;
   final String? Function(String?) validator;
   final Function(String?) onSaved;
   final String? initialValue;
@@ -20,11 +21,13 @@ class RoundedFormInputField extends StatelessWidget {
     required this.validator,
     required this.onSaved,
     this.initialValue,
+    this.inputFieldBackColor = appPrimaryLightColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
+      backColor: inputFieldBackColor,
       child: TextFormField(
         initialValue: initialValue,
         onChanged: onChanged,

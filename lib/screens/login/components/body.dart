@@ -43,6 +43,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 : Text("DOKTOR GİRİŞ", key: UniqueKey())),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        backgroundColor: _isPatient ? appPrimaryColor : appSecondColor,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -88,8 +89,16 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       onSaved: (value) {
                         _loginInfo["email"] = value.toString();
                       },
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldBackColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                     ),
                     RoundedFormPasswordField(
+                      inputFieldColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
                       onChanged: (value) {},
                       validator: validatePassword,
                       onSaved: (value) {
@@ -100,15 +109,19 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 ),
               ),
               RoundedButton(
+                backColor: _isPatient ? appPrimaryColor : appSecondColor,
                 buttonText: "Giriş yap",
                 onPress: () {
                   login();
                 },
               ),
-              AlreadyHaveAnAccountCheck(onPress: () {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, "/register", ModalRoute.withName('/'));
-              }),
+              AlreadyHaveAnAccountCheck(
+                onPress: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, "/register", ModalRoute.withName('/'));
+                },
+                color: _isPatient ? appPrimaryColor : appSecondColor,
+              ),
               SizedBox(
                 height: size.height * 0.03,
               ),

@@ -9,6 +9,8 @@ class RoundedFormPasswordField extends StatefulWidget {
   final String? Function(String?) validator;
   final Function(String?) onSaved;
   final String hintText;
+  final Color backColor;
+  final Color inputFieldColor;
 
   const RoundedFormPasswordField({
     Key? key,
@@ -16,6 +18,8 @@ class RoundedFormPasswordField extends StatefulWidget {
     required this.validator,
     required this.onSaved,
     this.hintText = "Şifreniz",
+    this.backColor = appPrimaryColor,
+    this.inputFieldColor = appPrimaryLightColor,
   }) : super(key: key);
 
   @override
@@ -32,14 +36,15 @@ class _RoundedFormPasswordFieldState extends State<RoundedFormPasswordField> {
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
+      backColor: widget.inputFieldColor,
       child: TextFormField(
         obscureText: _obscureText,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
             hintText: widget.hintText,
-            icon: const Icon(
+            icon: Icon(
               Icons.lock,
-              color: appPrimaryColor,
+              color: widget.backColor,
             ),
             suffixIcon: IconButton(
               onPressed: () {
@@ -48,7 +53,7 @@ class _RoundedFormPasswordFieldState extends State<RoundedFormPasswordField> {
                 });
               },
               icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: appPrimaryColor),
+                  color: widget.backColor),
               highlightColor: Colors.transparent,
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,

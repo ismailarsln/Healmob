@@ -3,10 +3,12 @@ import 'package:healmob/constants.dart';
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;
+  final Color backColor;
 
   const TextFieldContainer({
     Key? key,
     required this.child,
+    this.backColor = appPrimaryLightColor,
   }) : super(key: key);
 
   @override
@@ -17,7 +19,7 @@ class TextFieldContainer extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       width: size.width * 0.8,
       decoration: BoxDecoration(
-          color: appPrimaryLightColor, borderRadius: BorderRadius.circular(29)),
+          color: backColor, borderRadius: BorderRadius.circular(29)),
       child: child,
     );
   }

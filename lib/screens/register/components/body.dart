@@ -63,6 +63,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 : Text("DOKTOR KAYIT", key: UniqueKey())),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        backgroundColor: _isPatient ? appPrimaryColor : appSecondColor,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -104,6 +105,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 child: Column(
                   children: [
                     RoundedFormInputField(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldBackColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       hintText: "Adınız",
                       icon: Icons.person,
                       onChanged: (value) {},
@@ -115,6 +120,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       },
                     ),
                     RoundedFormInputField(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldBackColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       hintText: "Soyadınız",
                       icon: Icons.person,
                       onChanged: (value) {},
@@ -126,6 +135,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       },
                     ),
                     RoundedFormInputField(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldBackColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       hintText: "E-posta adresiniz",
                       icon: Icons.email,
                       onChanged: (value) {},
@@ -137,6 +150,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       },
                     ),
                     RoundedFormPasswordField(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       onChanged: (value) {},
                       validator: validatePassword,
                       onSaved: (value) {
@@ -146,6 +163,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       },
                     ),
                     RoundedFormInputField(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldBackColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       hintText: "Telefon numaranız",
                       icon: Icons.phone,
                       onChanged: (value) {},
@@ -157,6 +178,10 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       },
                     ),
                     RoundedDropdown<String>(
+                      backColor: _isPatient ? appPrimaryColor : appSecondColor,
+                      inputFieldColor: _isPatient
+                          ? appPrimaryLightColor
+                          : appSecondLightColor,
                       icon: Icons.wc,
                       onChanged: (value) {
                         setState(() {
@@ -173,6 +198,11 @@ class _BodyState extends State<Body> with UserValidationMixin {
                     ),
                     if (!_isPatient)
                       RoundedDropdown<AnabilimDali>(
+                        backColor:
+                            _isPatient ? appPrimaryColor : appSecondColor,
+                        inputFieldColor: _isPatient
+                            ? appPrimaryLightColor
+                            : appSecondLightColor,
                         icon: Icons.assignment_ind_rounded,
                         onChanged: (value) {
                           setState(() {
@@ -189,6 +219,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                       ),
                     if (!_isPatient)
                       TextFieldContainer(
+                        backColor: appSecondLightColor,
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height / 3,
                           width: MediaQuery.of(context).size.width / 1.5,
@@ -240,6 +271,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 ),
               ),
               RoundedButton(
+                backColor: _isPatient ? appPrimaryColor : appSecondColor,
                 buttonText:
                     (_isPatient ? "Hasta" : "Doktor ") + " kaydını oluştur",
                 onPress: () {
@@ -247,6 +279,7 @@ class _BodyState extends State<Body> with UserValidationMixin {
                 },
               ),
               AlreadyHaveAnAccountCheck(
+                color: _isPatient ? appPrimaryColor : appSecondColor,
                 onPress: () {
                   Navigator.pushNamedAndRemoveUntil(
                       context, "/login", ModalRoute.withName('/'));

@@ -4,11 +4,13 @@ import 'package:healmob/constants.dart';
 class AlreadyHaveAnAccountCheck extends StatelessWidget {
   final bool login;
   final void Function() onPress;
+  final Color color;
 
   const AlreadyHaveAnAccountCheck({
     Key? key,
     this.login = true,
     required this.onPress,
+    this.color = appPrimaryColor,
   }) : super(key: key);
 
   @override
@@ -18,14 +20,13 @@ class AlreadyHaveAnAccountCheck extends StatelessWidget {
       children: <Widget>[
         Text(
           login ? "Hesabın yok mu? " : "Zaten bir hesabın var mı? ",
-          style: const TextStyle(color: appPrimaryColor),
+          style: TextStyle(color: color),
         ),
         GestureDetector(
           onTap: onPress,
           child: Text(
             login ? "Hemen kayıt ol" : "Hemen giriş yap",
-            style: const TextStyle(
-                color: appPrimaryColor, fontWeight: FontWeight.bold),
+            style: TextStyle(color: color, fontWeight: FontWeight.bold),
           ),
         )
       ],

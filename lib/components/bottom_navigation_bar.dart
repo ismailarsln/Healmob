@@ -2,22 +2,22 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:healmob/constants.dart';
 
-class PatientBottomNavigationBar extends StatefulWidget {
+class MyBottomNavigationBar extends StatefulWidget {
   final ValueChanged<int> onTap;
-  const PatientBottomNavigationBar({Key? key, required this.onTap})
+  final bool isPatient;
+  const MyBottomNavigationBar(
+      {Key? key, required this.onTap, required this.isPatient})
       : super(key: key);
 
   @override
-  State<PatientBottomNavigationBar> createState() =>
-      _PatientBottomNavigationBarState();
+  State<MyBottomNavigationBar> createState() => _MyBottomNavigationBarState();
 }
 
-class _PatientBottomNavigationBarState
-    extends State<PatientBottomNavigationBar> {
+class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
-      color: appPrimaryDarkColor,
+      color: widget.isPatient ? appPrimaryColor : appSecondColor,
       backgroundColor: Colors.transparent,
       animationDuration: const Duration(milliseconds: 450),
       height: 60,

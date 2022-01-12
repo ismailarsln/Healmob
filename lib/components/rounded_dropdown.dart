@@ -8,6 +8,7 @@ class RoundedDropdown<T> extends StatelessWidget {
   final T? selectedValue;
   final IconData icon;
   final Color backColor;
+  final Color inputFieldColor;
 
   const RoundedDropdown({
     Key? key,
@@ -16,11 +17,13 @@ class RoundedDropdown<T> extends StatelessWidget {
     required this.selectedValue,
     required this.icon,
     this.backColor = appPrimaryColor,
+    this.inputFieldColor = appPrimaryLightColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
+      backColor: inputFieldColor,
       child: Row(children: [
         Icon(
           icon,
