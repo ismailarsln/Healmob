@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:healmob/constants.dart';
+import 'package:healmob/data/notification_service.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:healmob/screens/doctor_home/pages/home_page.dart';
 import 'package:healmob/screens/doctor_home/pages/message_page.dart';
@@ -15,6 +17,28 @@ class DoctorHomeScreen extends StatefulWidget {
 }
 
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
+  @override
+  void initState() {
+    FirebaseMessaging.instance
+        .getToken()
+        .then(
+          (value) => NotificationApi.unSubscribeAllTopicsWithoutOneKey(value!,
+              "${widget.doktor.doktorNo}_${widget.doktor.email.replaceAll("@", "_")}"),
+        )
+        .then(
+          (value) => {
+            FirebaseMessaging.instance.subscribeToTopic(
+                "${widget.doktor.doktorNo}_${widget.doktor.email.replaceAll("@", "_")}")
+          },
+        );
+
+    FirebaseMessaging.onMessage.listen((message) {
+      _showAlert(
+          context, message.notification!.title!, message.notification!.body!);
+    });
+    super.initState();
+  }
+
   var _selectedTab = 0;
   @override
   Widget build(BuildContext context) {
@@ -35,5 +59,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
       body: AnimatedSwitcher(
           duration: defaultDuration, child: _screens[_selectedTab]),
     );
+  }
+
+  void _showAlert(BuildContext context, String title, String message) {
+    var alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(context: context, builder: (BuildContext context) => alert);
   }
 }

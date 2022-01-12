@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:healmob/models/doktor.dart';
 import 'package:healmob/models/hasta.dart';
@@ -7,11 +8,20 @@ import 'package:healmob/screens/patient_home/patient_home_screen.dart';
 import 'package:healmob/screens/register/register_screen.dart';
 
 void main() {
-  runApp(const Healmob());
+  runApp(Healmob());
 }
 
-class Healmob extends StatelessWidget {
-  const Healmob({Key? key}) : super(key: key);
+class Healmob extends StatefulWidget {
+  @override
+  State<Healmob> createState() => _HealmobState();
+}
+
+class _HealmobState extends State<Healmob> {
+  @override
+  void initState() {
+    Firebase.initializeApp();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "993275004651",
+    "project_id": "healmob-fd9e2",
+    "storage_bucket": "healmob-fd9e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993275004651:android:e005a2e7e2fba7690ea0ae",
+        "android_client_info": {
+          "package_name": "com.healmob.healmob"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "993275004651-2nclshrjrh1ces2e6frtma2ohhn91uol.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO-V_1l1fEwQVO_jZcDDUxETqh_xs8yww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "993275004651-2nclshrjrh1ces2e6frtma2ohhn91uol.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

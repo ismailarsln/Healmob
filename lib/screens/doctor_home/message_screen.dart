@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:healmob/constants.dart';
 import 'package:healmob/data/mesaj_api.dart';
+import 'package:healmob/data/notification_service.dart';
 import 'package:healmob/environment.dart';
 import 'package:healmob/models/api_response/api_get_response.dart';
 import 'package:healmob/models/api_response/api_post_response.dart';
@@ -335,6 +336,10 @@ class _MessageScreenState extends State<MessageScreen> {
                                     widget.mesaj = newMessage;
                                     widget.permSendMessage = false;
                                     txtMessage.clear();
+                                    NotificationApi.sendNotification(
+                                        "${widget.hasta.hastaNo}_${widget.hasta.email.replaceAll("@", "_")}",
+                                        "Doktordan mesajınız var",
+                                        "Doktor ${widget.doktor.ad.replaceFirst(widget.doktor.ad[0], widget.doktor.ad[0].toUpperCase())} ${widget.doktor.soyad.replaceFirst(widget.doktor.soyad[0], widget.doktor.soyad[0].toUpperCase())} mesajınıza yanıt verdi");
                                   },
                                 );
                               } else {

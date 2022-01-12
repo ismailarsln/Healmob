@@ -9,6 +9,7 @@ const anabilimDaliRoute = require("./routes/anabilimDaliRoute");
 const hastaRoute = require("./routes/hastaRoute");
 const doktorRoute = require("./routes/doktorRoute");
 const fileuploadRoute = require("./routes/fileUploadRoute");
+const fcmRoute = require("./routes/fcmRoute");
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -24,6 +25,7 @@ app.use('/anabilimdali', anabilimDaliRoute);
 app.use('/hasta', hastaRoute);
 app.use('/doktor', doktorRoute);
 app.use('/files', fileuploadRoute);
+app.use('/fcm', fcmRoute);
 
 app.listen(3000, function () {
     console.log('Server running(localhost:3000)');
