@@ -1,8 +1,8 @@
-# healmob
+# Healmob
 
-A telemedicine application
+A telemedicine application created with Flutter in Android Studio
 
-## Getting Started
+### Getting Started
 
 This project is a starting point for a Flutter application.
 
